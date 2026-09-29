@@ -1,7 +1,7 @@
 # Evaluation: ask tests, mode checks, failures
 
 **Model:** `mlx-community/gemma-4-e2b-it-4bit` (Gemma 4 E2B instruction-tuned, MLX 4-bit), run locally on an Apple M1 with 8 GB and Wi-Fi off.
-**Data:** 6 sources in `vault/raw/`, 18 reviewed notes in `vault/wiki/`, and 129 BM25 passages.
+**Data:** 5 sources in `vault/raw/`, 18 reviewed notes in `vault/wiki/`, and 129 BM25 passages.
 **Final offline run:** [`offline/offline-demo-20260929-150746.log`](offline/offline-demo-20260929-150746.log), screenshot [`screenshots/07-final-offline-run-terminal.webp`](screenshots/07-final-offline-run-terminal.webp).
 
 The questions and expected evidence were written before `ask` was built. They are in [`../tests/questions.md`](../tests/questions.md), outside the vault, so retrieval can never see the answer key.
