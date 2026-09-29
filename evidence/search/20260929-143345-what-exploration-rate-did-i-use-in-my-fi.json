@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-09-29T14:33:45",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "What exploration rate did I use in my final Pac-Man run?",
+  "passages": [
+    {
+      "id": "raw/pacman-dqn-readme.md#2",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \u2699\ufe0f Hyperparameters",
+      "kind": "raw",
+      "text": "* **Exploration Rate:** `0.09` - I lowered exploration across my runs, from 0.25 to 0.10 and finally to 0.09. In Ms. Pac-Man a random turn often walks straight into a ghost, so a high random rate ends games early and the agent rarely sees the later part of a maze. The agent is also evaluated at 5% exploration, so training nearer that value practices the behavior being graded. I kept it above 5% so the agent still had some pressure to try alternatives, since exploration is fixed for the whole run rather than decaying.\n* **Episodes:** `1000` - My previous run's training scores were still trending upward when it ended at 250 episodes, which suggested the agent had not finished learning. Quadrupling the budget produced 148,477 learning updates instead of 37,419, and still finished in under 40 minutes on a Colab T4.\n* **Learning Rate:** `0.0001` - An earlier run at 0.0002 showed loss climbing while training scores fell, which suggested each update was too large for a replay memory holding only 5,000 decisions. At 0.0001 learning became steadier, so I held it fixed for my last two runs.",
+      "score": 12.23
+    },
+    {
+      "id": "wiki/Concepts/Exploration Rate.md#0",
+      "path": "wiki/Concepts/Exploration Rate.md",
+      "section": "Exploration Rate",
+      "kind": "wiki",
+      "text": "In reinforcement learning, the fraction of moves the agent picks at random to try new things, instead of the move it currently thinks is best.\n\nAppears in: - [[Ms Pac-Man DQN Agent]] \u2014 lowered 0.25 \u2192 0.10 \u2192 0.09, because random turns in Ms. Pac-Man often walk into ghosts.",
+      "score": 11.26
+    },
+    {
+      "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#1",
+      "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+      "section": "Ms Pac-Man DQN Agent > Key details",
+      "kind": "wiki",
+      "text": "- **Final settings:** exploration rate 0.09, 1,000 episodes, learning rate 0.0001 (\u00a7 Hyperparameters).\n- Exploration was lowered 0.25 \u2192 0.10 \u2192 0.09 because random turns walk into ghosts; evaluation runs at 5% exploration (\u00a7 Hyperparameters).\n- An earlier learning rate of 0.0002 showed loss climbing while scores fell; 0.0001 was steadier (\u00a7 Hyperparameters).\n- The agent sees a stack of four 84\u00d784 grayscale frames and chooses one of 9 joystick moves; rewards are clipped to \u22121\u2026+1 during learning (\u00a7 How the Agent Works).\n- Evaluation: same five seeds, 5% exploration, 3,000-decision limit, before and after training (\u00a7 Score Comparison).\n- Trained on an NVIDIA T4 GPU in Google Colab: 594,907 decisions, 148,477 learning updates, 37.8 minutes (\u00a7 Training Statistics & Hardware).\n- **Limitation:** learning plateaued after about episode 400; the likely cause is a replay memory of only 5,000 decisions (\u00a7 Limitations & Next Steps).\n- **Next experiment:** raise replay memory from 5,000 to 50,000, holding the other settings fixed (\u00a7 Limitations & Next Steps).",
+      "score": 11.26
+    },
+    {
+      "id": "raw/pacman-dqn-readme.md#10",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Experiment Log (part 2)",
+      "kind": "raw",
+      "text": "Run 1 was a five-episode setup check with only 539 learning updates, so its 730 reflects luck across five games rather than learning \u2014 a useful reminder of how noisy a five-game evaluation is. Run 2 trained 20\u00d7 longer and scored worse, which is what prompted lowering both exploration and the learning rate. Runs 3 and 4 then improved steadily.\n\n---",
+      "score": 10.92
+    }
+  ]
+}

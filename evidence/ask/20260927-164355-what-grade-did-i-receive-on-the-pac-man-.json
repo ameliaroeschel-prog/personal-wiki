@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-09-27T16:43:55",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "What grade did I receive on the Pac-Man assignment?",
+  "passages": [
+    {
+      "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#0",
+      "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+      "section": "Ms Pac-Man DQN Agent",
+      "kind": "wiki",
+      "text": "Assignment 2: a Deep Q-Network (DQN) agent that learns Ms. Pac-Man by trial and error from game pixels and score rewards. After tuning three hyperparameters over four runs, the trained agent's mean evaluation score rose from **492 to 1,072 (+118%)**, improving on all five evaluation seeds.",
+      "score": 6.16,
+      "label": "S1"
+    },
+    {
+      "id": "wiki/Concepts/Exploration Rate.md#0",
+      "path": "wiki/Concepts/Exploration Rate.md",
+      "section": "Exploration Rate",
+      "kind": "wiki",
+      "text": "In reinforcement learning, the fraction of moves the agent picks at random to try new things, instead of the move it currently thinks is best.\n\nAppears in: - [[Ms Pac-Man DQN Agent]] \u2014 lowered 0.25 \u2192 0.10 \u2192 0.09, because random turns in Ms. Pac-Man often walk into ghosts.",
+      "score": 4.98,
+      "label": "S2"
+    },
+    {
+      "id": "raw/pacman-dqn-readme.md#3",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \u2699\ufe0f Hyperparameters (part 2)",
+      "kind": "raw",
+      "text": "Note that this run changed **two** settings from my previous one (exploration 0.10 \u2192 0.09 and episodes 250 \u2192 1000), so the improvement below cannot be attributed to the episode budget alone.\n\n---",
+      "score": 3.98,
+      "label": "S3"
+    },
+    {
+      "id": "wiki/Concepts/Evaluation Suite.md#1",
+      "path": "wiki/Concepts/Evaluation Suite.md",
+      "section": "Evaluation Suite > Appears in",
+      "kind": "wiki",
+      "text": "- [[Custom nanoGPT LLM]] \u2014 a 48-case next-word exam with coverage, scorable accuracy and all-case success.\n- [[Ms Pac-Man DQN Agent]] \u2014 the same five seeds at 5% exploration, before and after training.",
+      "score": 3.98,
+      "label": "S4"
+    }
+  ],
+  "answer": "INSUFFICIENT EVIDENCE: the wiki does not say what grade was received on the Pac-Man assignment.",
+  "citation_check": {
+    "cited": [],
+    "invalid": [],
+    "verdict": "insufficient evidence reported"
+  },
+  "stats": {
+    "seconds": 1.88,
+    "prompt_tokens": 591,
+    "generation_tokens": 23,
+    "peak_memory_gb": 4.17
+  }
+}

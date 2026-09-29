@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-09-29T14:59:45",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "replay memory plateau",
+  "passages": [
+    {
+      "id": "raw/pacman-dqn-readme.md#12",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udd2c Limitations & Next Steps",
+      "kind": "raw",
+      "text": "* **Observed Limitation:** Learning plateaued. After roughly episode 400 the 25-game average stopped trending upward, even though training continued for 600 more games, and the agent stayed inconsistent: its progress samples swing between 250 and 1,930 points on the same seed, and seed 202 scored 560 here against 850 in my shorter run. The likely cause is memory rather than practice. The agent remembers only its last 5,000 decisions, about eight games, so late in training it is still learning from a narrow slice of recent experience and cannot revisit the rare good games that would teach it the most. Watching the clips, it clears dots efficiently near where it starts but shows no sign of a plan for finishing a maze or for using power pellets to hunt ghosts.\n* **Next Experiment:** I would change only the **replay memory size**, from `5,000` to `50,000` decisions, keeping exploration at 0.09, episodes at 1,000, and the learning rate at 0.0001. The assignment allows tuning settings beyond the three main dials as long as the change is explained, and the plateau above points at memory as the binding constraint rather than the amount of play. A ten-times-larger memory would let the agent keep learning from roughly 80 past games instead of 8. I would expect the 25-game average to keep climbing past episode 400 instead of flattening, and I would watch whether the evaluation scores become less erratic across the five seeds.",
+      "score": 8.78
+    },
+    {
+      "id": "wiki/Concepts/Replay Memory.md#0",
+      "path": "wiki/Concepts/Replay Memory.md",
+      "section": "Replay Memory",
+      "kind": "wiki",
+      "text": "A DQN agent stores its recent decisions and outcomes and trains on random samples from them. Its size limits how far back the agent can learn from.\n\nAppears in: - [[Ms Pac-Man DQN Agent]] \u2014 held only 5,000 decisions (about eight games); the proposed next experiment raises it to 50,000.",
+      "score": 8.28
+    },
+    {
+      "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#1",
+      "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+      "section": "Ms Pac-Man DQN Agent > Key details",
+      "kind": "wiki",
+      "text": "- **Final settings:** exploration rate 0.09, 1,000 episodes, learning rate 0.0001 (\u00a7 Hyperparameters).\n- Exploration was lowered 0.25 \u2192 0.10 \u2192 0.09 because random turns walk into ghosts; evaluation runs at 5% exploration (\u00a7 Hyperparameters).\n- An earlier learning rate of 0.0002 showed loss climbing while scores fell; 0.0001 was steadier (\u00a7 Hyperparameters).\n- The agent sees a stack of four 84\u00d784 grayscale frames and chooses one of 9 joystick moves; rewards are clipped to \u22121\u2026+1 during learning (\u00a7 How the Agent Works).\n- Evaluation: same five seeds, 5% exploration, 3,000-decision limit, before and after training (\u00a7 Score Comparison).\n- Trained on an NVIDIA T4 GPU in Google Colab: 594,907 decisions, 148,477 learning updates, 37.8 minutes (\u00a7 Training Statistics & Hardware).\n- **Limitation:** learning plateaued after about episode 400; the likely cause is a replay memory of only 5,000 decisions (\u00a7 Limitations & Next Steps).\n- **Next experiment:** raise replay memory from 5,000 to 50,000, holding the other settings fixed (\u00a7 Limitations & Next Steps).",
+      "score": 7.22
+    }
+  ]
+}

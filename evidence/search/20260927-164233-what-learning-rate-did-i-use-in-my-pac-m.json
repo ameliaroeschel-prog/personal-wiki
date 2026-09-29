@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-09-27T16:42:33",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "what learning rate did I use in my pac-man project?",
+  "passages": [
+    {
+      "id": "wiki/Projects/Custom nanoGPT LLM.md#3",
+      "path": "wiki/Projects/Custom nanoGPT LLM.md",
+      "section": "Custom nanoGPT LLM > Related projects",
+      "kind": "wiki",
+      "text": "- [[Ms Pac-Man DQN Agent]] \u2014 the other training experiment; both tune a learning rate and read loss curves.",
+      "score": 12.19
+    },
+    {
+      "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#3",
+      "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+      "section": "Ms Pac-Man DQN Agent > Related projects",
+      "kind": "wiki",
+      "text": "- [[Custom nanoGPT LLM]] \u2014 the other training experiment; both tune a learning rate and read loss curves.",
+      "score": 12.19
+    },
+    {
+      "id": "wiki/Concepts/Learning Rate.md#1",
+      "path": "wiki/Concepts/Learning Rate.md",
+      "section": "Learning Rate > Related concepts",
+      "kind": "wiki",
+      "text": "- [[Loss]] \u2014 the signal that shows whether the learning rate is too high (loss climbs) or working (loss falls then settles).\n- [[Exploration Rate]] \u2014 the other hyperparameter tuned in the Pac-Man runs.",
+      "score": 10.11
+    },
+    {
+      "id": "wiki/Concepts/Learning Rate.md#2",
+      "path": "wiki/Concepts/Learning Rate.md",
+      "section": "Learning Rate > Appears in",
+      "kind": "wiki",
+      "text": "- [[Custom nanoGPT LLM]] \u2014 held at 0.001 for both experiments, with warmup and cosine decay.\n- [[Ms Pac-Man DQN Agent]] \u2014 lowered from 0.0002 to 0.0001 after loss climbed while scores fell.",
+      "score": 8.31
+    },
+    {
+      "id": "wiki/Concepts/Exploration Rate.md#2",
+      "path": "wiki/Concepts/Exploration Rate.md",
+      "section": "Exploration Rate > Appears in",
+      "kind": "wiki",
+      "text": "- [[Ms Pac-Man DQN Agent]] \u2014 lowered 0.25 \u2192 0.10 \u2192 0.09, because random turns in Ms. Pac-Man often walk into ghosts.",
+      "score": 7.7
+    }
+  ]
+}

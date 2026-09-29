@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-09-29T14:33:37",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "when does conflict lab meet",
+  "passages": [
+    {
+      "id": "wiki/Courses/Haas Course Schedule.md#2",
+      "path": "wiki/Courses/Haas Course Schedule.md",
+      "section": "Haas Course Schedule > Conflict Lab",
+      "kind": "wiki",
+      "text": "- **Instructor:** Francesca\n- **Meets:** Thursdays, 2\u20135 p.m., room N500\n- **Covers:** hands-on practice of difficult conversations at work, with elements borrowed from couples therapy. Recent topics: somatics, giving a good apology, giving feedback, and intent versus impact.",
+      "score": 14.02
+    },
+    {
+      "id": "raw/haas-courses-voice-note.md#0",
+      "path": "raw/haas-courses-voice-note.md",
+      "section": "(top)",
+      "kind": "raw",
+      "text": "Okay, so let's start with my HOS classes. Um, first, I'm taking strategy, structure, and incentives with Greg LeBlanc. This covers economics, markets and firms, organizational design, um, and just kind of a bunch of other stuff. Um, and it meets on Tuesdays and Thursdays from 11 to 12:30 p.m. in room N570. Next, I'm taking... Fundamentals of Agentic AI with Pepe. Um, that's the class that I'm building this for. Um, in that class, we focus on LLMs and kind of the evolution of LLMs from uh, historical context to present day and what you can do with them um, with a lot of hands-on building. That meets on Tuesdays from 4 to 6 p.m. Um, in room N570. I'm taking Conflict Lab with Francesca. This is like a hands-on course where you practice difficult conversations at work. There's a lot of components of like couples therapy. Um, last week we did somatics. We talked about like giving a good apology, giving feedback, etc. Intent versus impact, stuff like that. And this is on Wednesday, on sorry, Thursdays. Um, from two to five in room N500. Then I am also taking corporate financial accounting with Tanya Paul. This is where we learn how to read a 10K and evaluate financial reports from an investor's perspective. Um, we're learning about things like revenue recognition and um, kind of some of the art and science behind how you report figures to either look more or less favorable. Um, for firms. This meets um, on Thursdays from 8 to 11 a.m. in N170. And then I'm also in Power and Politics with Cameron Anderson. Um, in this course, we talk about influence at work, how to leverage relationships and networks to basically build credibility, advocacy, Um, and influence, um, as well as the relating behaviors like trustworthiness, personability, and openness. Um, and this is on Monday and Wednesday from 2 to 4 p.m. So that's my response to number A.",
+      "score": 8.14
+    }
+  ]
+}

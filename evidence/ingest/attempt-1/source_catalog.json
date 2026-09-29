@@ -1,0 +1,26 @@
+{
+  "custom-llm-readme": {
+    "title": "Custom LLM Assignment",
+    "note_path": "wiki/Projects/Custom LLM Assignment.md",
+    "raw_path": "raw/custom-llm-readme.md",
+    "original_filename": "custom-llm-readme.md",
+    "sha256": "c647621eff21139e",
+    "ingested": "2026-09-27"
+  },
+  "networking-tracker-readme": {
+    "title": "Card Catalog Tracker",
+    "note_path": "wiki/Projects/Card Catalog Tracker.md",
+    "raw_path": "raw/networking-tracker-readme.md",
+    "original_filename": "networking-tracker-readme.md",
+    "sha256": "2e401653ff1da865",
+    "ingested": "2026-09-27"
+  },
+  "pacman-dqn-readme": {
+    "title": "PacMan DQN Agent",
+    "note_path": "wiki/Projects/PacMan DQN Agent.md",
+    "raw_path": "raw/pacman-dqn-readme.md",
+    "original_filename": "pacman-dqn-readme.md",
+    "sha256": "5ad7c34b7ca2cf97",
+    "ingested": "2026-09-27"
+  }
+}

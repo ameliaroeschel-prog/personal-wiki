@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-09-29T14:59:04",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "How much bigger did the word list get when I added the food files?",
+  "passages": [
+    {
+      "id": "raw/custom-llm-readme.md#23",
+      "path": "raw/custom-llm-readme.md",
+      "section": "Building a Custom LLM \u2014 Class 4 Assignment > 10. One limitation + proposed next experiment > My questions along the way (reflections)",
+      "kind": "raw",
+      "text": "- *\"The Exp 2 loss graph doesn't look better than Exp 1.\"* \u2014 Correct, and it taught me that **loss measures corpus fit, not exam performance, and isn't comparable across vocabularies.** The real gain is in eval coverage/accuracy.\n- *\"Would reasoning emerge with a much bigger vocabulary and millions of training steps?\"* \u2014 Not from steps alone. **Three things must scale together: far more varied data, a much bigger/deeper model (hundreds of billions of params vs my ~124k), and more compute.** Millions of steps on *this* tiny setup would just **overfit** \u2014 memorize the 163 sentences harder \u2014 which the flat loss curve past step ~1,200 already hints at. Even frontier models are doing sophisticated next-word prediction at scale, the *same core operation* my model does; scale is what makes reasoning-like behavior emerge.\n\n---",
+      "score": 10.37,
+      "label": "S1"
+    },
+    {
+      "id": "raw/custom-llm-readme.md#4",
+      "path": "raw/custom-llm-readme.md",
+      "section": "Building a Custom LLM \u2014 Class 4 Assignment > 2. My three choices, and why > Corpus details",
+      "kind": "raw",
+      "text": "- **Sources & permissions:** all corpus files are original sentences I wrote for this assignment (`corpus/food_negation.txt`, `corpus/food_opposites.txt`, `corpus/food_sequence.txt`). No copyrighted, confidential, or personal data. Free to share.\n- **Format / extraction check:** all three are UTF-8 **plain text** (`.txt`), so no PDF extraction or OCR was needed. The corpus manifest recorded **0 warnings** for all three files ([corpus_manifest.json](llm_runs/exp2_extended/corpus_manifest.json)).\n- **Passages added:** 163 unique passages (negation 84, opposites 33, sequence 46), split at \u226447 tokens on sentence boundaries.\n- **Vocabulary:** grew from **136 \u2192 324 words**. Unknown-token rates: **training 0.0%**, held-out validation **0.23%** ([vocabulary_report.json](llm_runs/exp2_extended/vocabulary_report.json)).\n- **Split:** duplicates removed, then a 90/10 passage split \u2014 Exp 2: **4,279 train / 476 validation** passages. Validation passages never supply weight updates.",
+      "score": 9.49,
+      "label": "S2"
+    },
+    {
+      "id": "wiki/Concepts/Corpus.md#0",
+      "path": "wiki/Concepts/Corpus.md",
+      "section": "Corpus",
+      "kind": "wiki",
+      "text": "The collection of text used to train a language model. A small model can only use words that appear in its corpus.\n\nAppears in: - [[Custom nanoGPT LLM]] \u2014 the only variable changed between experiments; three food files grew vocabulary from 136 to 324 words.",
+      "score": 9.47,
+      "label": "S3"
+    },
+    {
+      "id": "raw/custom-llm-readme.md#14",
+      "path": "raw/custom-llm-readme.md",
+      "section": "Building a Custom LLM \u2014 Class 4 Assignment > 6. Loss & samples (part 3)",
+      "kind": "raw",
+      "text": "| Stage | Exp 2 sample |\n|---|---|\n| **Untrained (step 0)** | `pear professor bond doctor course harvest team physician journey...` \u2014 word salad, includes `<UNK>` |\n| **Halfway (step 1,500)** | `our school has a question about the new educator and lesson.` \u2014 real grammar appears |\n| **Final (step 3,000)** | `the different mango was mentioned in the harvest report yesterday.` \u2014 grammatical, and a food word (`mango`) has bled in |\n\n**Visible change:** from random word lists \u2192 grammatical sentences that echo the corpus. The food vocabulary appears only occasionally in samples because the 163 food passages are just **3.4%** of the corpus \u2014 a dilution that matters for \u00a78.\n\n---",
+      "score": 8.86,
+      "label": "S4"
+    }
+  ],
+  "answer": "The vocabulary grew from 136 to 324 words when the food files were added [S3].",
+  "citation_check": {
+    "cited": [
+      "S3"
+    ],
+    "invalid": [],
+    "verdict": "ok: all citations point to retrieved passages (still verify they support the claims)"
+  },
+  "stats": {
+    "seconds": 2.29,
+    "prompt_tokens": 1074,
+    "generation_tokens": 25,
+    "peak_memory_gb": 4.19
+  }
+}

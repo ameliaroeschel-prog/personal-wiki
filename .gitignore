@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.DS_Store
+# Obsidian per-device window layout (graph.json and other settings are kept)
+vault/.obsidian/workspace.json

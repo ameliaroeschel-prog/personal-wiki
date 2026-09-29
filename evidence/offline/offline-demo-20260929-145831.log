@@ -1,0 +1,243 @@
+
+
+==================== 0. Proof of offline + device ====================
+$ curl -sS -m 5 https://huggingface.co
+Tue Sep 29 14:58:31 PDT 2026
+curl: (6) Could not resolve host: huggingface.co
+Confirmed: internet unreachable.
+ProductName:		macOS ProductVersion:		15.5 BuildVersion:		24F74 
+Chip: Apple M1 · RAM: 8 GB unified memory
+Free disk: 36Gi
+Runtime: mlx-vlm 0.7.2 · mlx 0.32.2
+
+
+==================== 1. Help ====================
+$ ./wiki --help
+Personal wiki CLI — local Gemma + BM25 retrieval over an Obsidian vault.
+
+Commands:
+  ./wiki ingest vault/raw [--force]   Read sources, have local Gemma write linked wiki notes,
+                                      update vault/index.md and rebuild the search index.
+                                      Reviewed notes (reviewed: true) are skipped unless --force.
+                                      Also accepts a single file.
+  ./wiki ingest <file> --draft        Gemma writes a fresh draft to data/drafts/ (vault untouched).
+  ./wiki search "query" [-k 5]        Show matching ORIGINAL passages + paths. No model, no answer.
+  ./wiki ask "question" [--mode local]
+                                      Standalone factual answer from retrieved evidence, with
+                                      [S#] citations, or INSUFFICIENT EVIDENCE. No chat history.
+  ./wiki chat                         Personal assistant "Scout": conversation memory, retrieves
+                                      notes only when useful. /notes /clear /exit inside chat.
+  ./wiki reindex                      Rebuild index.md + search index without calling the model.
+  ./wiki check                        Verify every [[link]] resolves and headings match filenames.
+  ./wiki help                         This message.
+
+Configuration (wikicli/config.py):
+  model      mlx-community/gemma-4-e2b-it-4bit   (execution: local, offline)
+  vault      vault/  (raw/ originals, wiki/ notes, index.md)
+  prompts    prompts/persona.md (chat), prompts/wiki-instructions.md (ask),
+             prompts/ingest-instructions.md (ingest)
+  evidence   every ask/chat/search run is saved to evidence/<mode>/
+
+Requires: ~/local-ai/venv with mlx-vlm, and the model in the local Hugging Face cache.
+
+
+
+==================== 2a. Ingest all sources (reviewed notes are skipped; index + search index rebuilt) ====================
+$ ./wiki ingest vault/raw
+skip   career-history-voice-note.md -> wiki/Career/Career History.md (reviewed, unchanged)
+skip   custom-llm-readme.md -> wiki/Projects/Custom nanoGPT LLM.md (reviewed, unchanged)
+skip   haas-courses-voice-note.md -> wiki/Courses/Haas Course Schedule.md (reviewed, unchanged)
+skip   networking-tracker-readme.md -> wiki/Projects/Card Catalog Networking Tracker.md (reviewed, unchanged)
+skip   pacman-dqn-readme.md -> wiki/Projects/Ms Pac-Man DQN Agent.md (reviewed, unchanged)
+index.md rewritten; search index rebuilt (129 passages)
+
+
+==================== 2b. Ingest a source with local Gemma (draft to data/drafts/, vault untouched) ====================
+$ ./wiki ingest vault/raw/pacman-dqn-readme.md --draft
+[ingest] pacman-dqn-readme.md: sending 5897 chars to Gemma...
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+draft  pacman-dqn-readme.md -> data/drafts/pacman-dqn-readme.md (Gemma title: 'PacMan DQN Agent'; 12.41 s, peak 4.31 GB; vault untouched)
+
+
+==================== 2c. Link check (no duplicates, no broken links) ====================
+$ ./wiki check
+All links resolve; all 18 note headings match filenames.
+
+
+==================== 3. Ask Test 1 (with memory + time measurement) ====================
+$ /usr/bin/time -l ./wiki ask "What exploration rate did I use in my final Pac-Man run?"
+ask · model mlx-community/gemma-4-e2b-it-4bit · execution: local · no chat history
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+
+Retrieved passages:
+  [S1] raw/pacman-dqn-readme.md — Training a Ms. Pac-Man Agent (Deep Q-Network) > ⚙️ Hyperparameters (BM25 12.91)
+  [S2] wiki/Concepts/Exploration Rate.md — Exploration Rate (BM25 11.9)
+  [S3] wiki/Projects/Ms Pac-Man DQN Agent.md — Ms Pac-Man DQN Agent > Key details (BM25 11.66)
+  [S4] raw/pacman-dqn-readme.md — Training a Ms. Pac-Man Agent (Deep Q-Network) > 📊 Evaluation & Scores > Experiment Log (part 2) (BM25 11.55)
+
+Answer:
+The exploration rate used in the final settings was $0.09$ [S3].
+
+Citation check: ok: all citations point to retrieved passages (still verify they support the claims)
+Time: 2.19 s · peak memory 4.21 GB
+Evidence card: evidence/ask/20260929-145857-what-exploration-rate-did-i-use-in-my-fi.md
+        6.77 real         2.70 user         2.15 sys
+          2208120832  maximum resident set size
+          4651691072  peak memory footprint
+
+
+==================== 4. Ask Test 2 (paraphrased) ====================
+$ ./wiki ask "How much bigger did the word list get when I added the food files?"
+ask · model mlx-community/gemma-4-e2b-it-4bit · execution: local · no chat history
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+
+Retrieved passages:
+  [S1] raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 10. One limitation + proposed next experiment > My questions along the way (reflections) (BM25 10.37)
+  [S2] raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 2. My three choices, and why > Corpus details (BM25 9.49)
+  [S3] wiki/Concepts/Corpus.md — Corpus (BM25 9.47)
+  [S4] raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 6. Loss & samples (part 3) (BM25 8.86)
+
+Answer:
+The vocabulary grew from 136 to 324 words when the food files were added [S3].
+
+Citation check: ok: all citations point to retrieved passages (still verify they support the claims)
+Time: 2.29 s · peak memory 4.19 GB
+Evidence card: evidence/ask/20260929-145904-how-much-bigger-did-the-word-list-get-wh.md
+
+
+==================== 5. Ask Test 3 (two sources) ====================
+$ ./wiki ask "Which of my projects ran on Google Colab, and what hardware did each use?"
+ask · model mlx-community/gemma-4-e2b-it-4bit · execution: local · no chat history
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+
+Retrieved passages:
+  [S1] raw/pacman-dqn-readme.md — Training a Ms. Pac-Man Agent (Deep Q-Network) > 📈 Training Statistics & Hardware (BM25 10.88)
+  [S2] raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 1. Overview & how to run (part 2) (BM25 8.2)
+  [S3] raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 4. Run facts (BM25 7.23)
+  [S4] wiki/Projects/Ms Pac-Man DQN Agent.md — Ms Pac-Man DQN Agent > Key details (BM25 7.17)
+
+Answer:
+*   **Ms Pac-Man DQN Agent:** Trained on an NVIDIA T4 GPU via Google Colab [S1], and also trained on an NVIDIA T4 GPU in Google Colab [S4].
+*   **Custom LLM (Experiment 1 and 2):** Used Colab CPU (Linux x86\_64, PyTorch 2.11 CPU) for both experiments [S3].
+
+Citation check: ok: all citations point to retrieved passages (still verify they support the claims)
+Time: 4.02 s · peak memory 4.21 GB
+Evidence card: evidence/ask/20260929-145913-which-of-my-projects-ran-on-google-colab.md
+
+
+==================== 6. Chat mode checks (capabilities, draft, follow-up, a claim made only in chat) ====================
+$ ./wiki chat
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+
+Scout (chat mode) · model mlx-community/gemma-4-e2b-it-4bit · execution: local
+Type a message. /notes <q> forces a wiki lookup, /clear resets, /exit quits.
+
+you > scout > Hey! I'm Scout, your personal wiki assistant. Think of me as your ultra-efficient chief of staff for all things Amelia and AI.
+
+What are we tackling first? We can brainstorm, draft, summarize, or pull up some notes from the wiki. Let me know! 😊
+[retrieval: no — conversational / follow-up]
+
+you > scout > I can help you with anything related to Amelia's work, notes, or planning!
+
+Specifically, I can:
+
+1.  **Drafting & Refining:** Help you brainstorm, write, plan, summarize, or rewrite content. Just give me the goal!
+2.  **Wiki Lookups:** Retrieve specific information from Amelia's personal wiki notes when you need it. Just ask, and I'll pull the relevant passages for you (e.g., using `/notes`).
+3.  **Explaining Projects:** Give you quick overviews of her past projects like the Networking Tracker, Ms. Pac-Man DQN, or the custom nanoGPT LLM.
+4.  **Reviewing Notes:** Help you organize or clarify things based on the notes Amelia has saved.
+
+Basically, I make sure the information flows smoothly. What's on your mind?
+[retrieval: no — conversational / follow-up]
+
+you > scout > Got it. You need a concise, 4-step study plan based on the concepts you just pulled up. Here is a draft for you:
+
+**4-Step Final Exam Study Plan:**
+
+1.  **Understand the Core Concept:** Grasp what an AI Agent is—it's a model that plans and executes multi-step tasks, not just text generation [S1].
+2.  **Master Evaluation Mechanics:** Focus on how to score evaluations. Remember the key components: prompt, four choices, answer key, and scoring rules.
+3.  **Analyze the Corpus:** Understand the difference between a successful test and an unscorable case. Focus on the metrics: *coverage* (can the model attempt the question), *scorable accuracy* (how many correct attempts), and *all-case success*.
+4.  **Track Model Progression:** Review how the model trains. Note the visible change from random word lists to grammatical sentences echoing the corpus. Pay attention to how rare vocabulary (like food words) dilutes the results [S3].
+
+How does that look? We can make it shorter or focus on a specific area!
+[retrieval: yes — strong wiki match (BM25 8.56)]
+  S1 wiki/Concepts/AI Agents.md — AI Agents
+  S2 raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 7. Evaluations — the 48-case suite
+  S3 raw/custom-llm-readme.md — Building a Custom LLM — Class 4 Assignment > 6. Loss & samples (part 3)
+
+you > scout > Suggestion: Here is the super-condensed version for quick review.
+
+**4-Step Exam Prep:**
+
+1.  **Concept:** Agents = Plan + Execute.
+2.  **Scoring:** Know the components: Prompt $\rightarrow$ Choices $\rightarrow$ Key $\rightarrow$ Score.
+3.  **Analysis:** Differentiate between solvable vs. unscorable questions (coverage vs. accuracy).
+4.  **Training:** Watch the corpus shift—how rare words affect final output.
+
+That should be much faster to digest! Let me know if you need another rewrite.
+[retrieval: no — conversational / follow-up]
+
+you > scout > That's fantastic news! Congratulations on the A on the Pac-Man assignment. That 118% improvement is seriously impressive.
+
+Since you just mentioned it, I pulled up the relevant notes for context.
+
+Here are the passages related to that project:
+
+*   **[S1]**: Mentions that the DQN agent showed a massive score increase, rising from 492 to 1,072, and improved across all five evaluation seeds.
+*   **[S2]**: Details how the agent processes the game by stacking four consecutive grayscale screens to perceive movement, and outlines the nine available joystick moves.
+*   **[S3]**: Relates to the Exploration Rate, noting that lowering this rate (from 0.25 down to 0.09) was done because random turns often resulted in the agent walking into ghosts.
+
+What about this information? Should I draft a summary of what you want to tell someone about the project?
+[retrieval: yes — mentions Amelia's notes or projects]
+  S1 wiki/Projects/Ms Pac-Man DQN Agent.md — Ms Pac-Man DQN Agent
+  S2 raw/pacman-dqn-readme.md — Training a Ms. Pac-Man Agent (Deep Q-Network) > 🧠 How the Agent Works
+  S3 wiki/Concepts/Exploration Rate.md — Exploration Rate
+
+you > [transcript saved to evidence/chat/20260929-145944-chat-session.md]
+
+
+==================== 7. Search mode: original passages only, no model ====================
+$ ./wiki search "replay memory plateau" -k 3
+search "replay memory plateau"  ·  mode: search (no model called)
+
+[1] raw/pacman-dqn-readme.md  ·  Training a Ms. Pac-Man Agent (Deep Q-Network) > 🔬 Limitations & Next Steps  ·  BM25 8.78  ·  raw
+    * **Observed Limitation:** Learning plateaued. After roughly episode 400 the 25-game average stopped trending upward, even though training continued for 600 more games, and the agent stayed inconsistent: its progress samples swing between 250 and 1,930 points on the same seed, and seed 202 scored 560 here against 850 in my shorter run. The likely cause is memory rather than practice. The agent remembers only its last 5,000 decisions, about eight games, so late in training it is still learning from a narrow slice of recent experience and cannot revisit the rare good games that would teach it the most. Watching the clips, it clears dots efficiently near where it starts but shows no sign of a plan for finishing a maze or for using power pellets to hunt ghosts.
+    * **Next Experiment:** I would change only the **replay memory size**, from `5,000` to `50,000` decisions, keeping exploration at 0.09, episodes at 1,000, and the learning rate at 0.0001. The assignment allows tuning settings beyond the three main dials as long as the change is explained, and the plateau above points at memory as the binding constraint rather than the amount of play. A ten-times-larger memory would let the agent keep learning from roughly 80 past games instead of 8. I would expect the 25-game average to keep climbing past episode 400 instead of flattening, and I would watch whether the evaluation scores become less erratic across the five seeds.
+
+[2] wiki/Concepts/Replay Memory.md  ·  Replay Memory  ·  BM25 8.28  ·  wiki
+    A DQN agent stores its recent decisions and outcomes and trains on random samples from them. Its size limits how far back the agent can learn from.
+    
+    Appears in: - [[Ms Pac-Man DQN Agent]] — held only 5,000 decisions (about eight games); the proposed next experiment raises it to 50,000.
+
+[3] wiki/Projects/Ms Pac-Man DQN Agent.md  ·  Ms Pac-Man DQN Agent > Key details  ·  BM25 7.22  ·  wiki
+    - **Final settings:** exploration rate 0.09, 1,000 episodes, learning rate 0.0001 (§ Hyperparameters).
+    - Exploration was lowered 0.25 → 0.10 → 0.09 because random turns walk into ghosts; evaluation runs at 5% exploration (§ Hyperparameters).
+    - An earlier learning rate of 0.0002 showed loss climbing while scores fell; 0.0001 was steadier (§ Hyperparameters).
+    - The agent sees a stack of four 84×84 grayscale frames and chooses one of 9 joystick moves; rewards are clipped to −1…+1 during learning (§ How the Agent Works).
+    - Evaluation: same five seeds, 5% exploration, 3,000-decision limit, before and after training (§ Score Comparison).
+    - Trained on an NVIDIA T4 GPU in Google Colab: 594,907 decisions, 148,477 learning updates, 37.8 minutes (§ Training Statistics & Hardware).
+    - **Limitation:** learning plateaued after about episode 400; the likely cause is a replay memory of only 5,000 decisions (§ Limitations & Next Steps).
+    - **Next experiment:** raise replay memory from 5,000 to 50,000, holding the other settings fixed (§ Limitations & Next Steps).
+
+
+==================== 8. Ask Test 4 (unanswerable) — also checks the chat claim above is NOT treated as evidence ====================
+$ ./wiki ask "What grade did I receive on the Pac-Man assignment?"
+ask · model mlx-community/gemma-4-e2b-it-4bit · execution: local · no chat history
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+
+Retrieved passages:
+  [S1] wiki/Projects/Ms Pac-Man DQN Agent.md — Ms Pac-Man DQN Agent (BM25 6.95)
+  [S2] wiki/Concepts/Exploration Rate.md — Exploration Rate (BM25 5.58)
+  [S3] raw/pacman-dqn-readme.md — Training a Ms. Pac-Man Agent (Deep Q-Network) > ⚙️ Hyperparameters (part 2) (BM25 4.45)
+  [S4] wiki/Concepts/Evaluation Suite.md — Evaluation Suite > Appears in (BM25 4.45)
+
+Answer:
+INSUFFICIENT EVIDENCE: the wiki does not say what grade was received on the Pac-Man assignment.
+
+Citation check: insufficient evidence reported
+Time: 1.78 s · peak memory 4.17 GB
+Evidence card: evidence/ask/20260929-145951-what-grade-did-i-receive-on-the-pac-man-.md
+
+
+==================== Done ====================
+$ date
+Tue Sep 29 14:59:51 PDT 2026

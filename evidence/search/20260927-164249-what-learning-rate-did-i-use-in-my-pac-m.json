@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-09-27T16:42:49",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "what learning rate did I use in my pac-man project?",
+  "passages": [
+    {
+      "id": "wiki/Concepts/Exploration Rate.md#0",
+      "path": "wiki/Concepts/Exploration Rate.md",
+      "section": "Exploration Rate",
+      "kind": "wiki",
+      "text": "In reinforcement learning, the fraction of moves the agent picks at random to try new things, instead of the move it currently thinks is best.\n\nAppears in: - [[Ms Pac-Man DQN Agent]] \u2014 lowered 0.25 \u2192 0.10 \u2192 0.09, because random turns in Ms. Pac-Man often walk into ghosts.",
+      "score": 9.94
+    },
+    {
+      "id": "raw/pacman-dqn-readme.md#2",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \u2699\ufe0f Hyperparameters",
+      "kind": "raw",
+      "text": "* **Exploration Rate:** `0.09` - I lowered exploration across my runs, from 0.25 to 0.10 and finally to 0.09. In Ms. Pac-Man a random turn often walks straight into a ghost, so a high random rate ends games early and the agent rarely sees the later part of a maze. The agent is also evaluated at 5% exploration, so training nearer that value practices the behavior being graded. I kept it above 5% so the agent still had some pressure to try alternatives, since exploration is fixed for the whole run rather than decaying.\n* **Episodes:** `1000` - My previous run's training scores were still trending upward when it ended at 250 episodes, which suggested the agent had not finished learning. Quadrupling the budget produced 148,477 learning updates instead of 37,419, and still finished in under 40 minutes on a Colab T4.\n* **Learning Rate:** `0.0001` - An earlier run at 0.0002 showed loss climbing while training scores fell, which suggested each update was too large for a replay memory holding only 5,000 decisions. At 0.0001 learning became steadier, so I held it fixed for my last two runs.",
+      "score": 8.87
+    },
+    {
+      "id": "wiki/Concepts/Learning Rate.md#0",
+      "path": "wiki/Concepts/Learning Rate.md",
+      "section": "Learning Rate",
+      "kind": "wiki",
+      "text": "The size of each weight update during training. Too large and training overshoots and loss climbs or diverges; too small and the model barely learns within the training budget.\n\nAppears in: - [[Custom nanoGPT LLM]] \u2014 held at 0.001 for both experiments, with warmup and cosine decay.\n- [[Ms Pac-Man DQN Agent]] \u2014 lowered from 0.0002 to 0.0001 after loss climbed while scores fell.",
+      "score": 8.7
+    },
+    {
+      "id": "raw/pacman-dqn-readme.md#10",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Experiment Log (part 2)",
+      "kind": "raw",
+      "text": "Run 1 was a five-episode setup check with only 539 learning updates, so its 730 reflects luck across five games rather than learning \u2014 a useful reminder of how noisy a five-game evaluation is. Run 2 trained 20\u00d7 longer and scored worse, which is what prompted lowering both exploration and the learning rate. Runs 3 and 4 then improved steadily.\n\n---",
+      "score": 8.69
+    }
+  ]
+}

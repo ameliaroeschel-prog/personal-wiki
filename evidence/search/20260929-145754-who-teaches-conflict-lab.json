@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-09-29T14:57:54",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "who teaches conflict lab",
+  "passages": [
+    {
+      "id": "wiki/Courses/Haas Course Schedule.md#2",
+      "path": "wiki/Courses/Haas Course Schedule.md",
+      "section": "Haas Course Schedule > Conflict Lab",
+      "kind": "wiki",
+      "text": "- **Instructor:** Francesca LeBaron\n- **Meets:** Thursdays, 2\u20135 p.m., room N500\n- **Covers:** hands-on practice of difficult conversations at work, with elements borrowed from couples therapy. Recent topics: somatics, giving a good apology, giving feedback, and intent versus impact.",
+      "score": 10.37
+    }
+  ]
+}

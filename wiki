@@ -1,0 +1,5 @@
+#!/bin/zsh
+# Launcher for the personal wiki CLI. Uses the local MLX environment in ~/local-ai.
+# Usage: ./wiki --help
+cd "$(dirname "$0")"
+exec ~/local-ai/venv/bin/python -m wikicli "$@"

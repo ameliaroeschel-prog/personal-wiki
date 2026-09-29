@@ -1,0 +1,47 @@
+{
+  "custom-llm-readme": {
+    "title": "Custom nanoGPT LLM",
+    "note_path": "wiki/Projects/Custom nanoGPT LLM.md",
+    "raw_path": "raw/custom-llm-readme.md",
+    "original_filename": "custom-llm-readme.md",
+    "sha256": "c647621eff21139e",
+    "ingested": "2026-09-27",
+    "generated_title": "Custom LLM Assignment"
+  },
+  "networking-tracker-readme": {
+    "title": "Card Catalog Networking Tracker",
+    "note_path": "wiki/Projects/Card Catalog Networking Tracker.md",
+    "raw_path": "raw/networking-tracker-readme.md",
+    "original_filename": "networking-tracker-readme.md",
+    "sha256": "2e401653ff1da865",
+    "ingested": "2026-09-27",
+    "generated_title": "Card Catalog Tracker"
+  },
+  "pacman-dqn-readme": {
+    "title": "Ms Pac-Man DQN Agent",
+    "note_path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+    "raw_path": "raw/pacman-dqn-readme.md",
+    "original_filename": "pacman-dqn-readme.md",
+    "sha256": "5ad7c34b7ca2cf97",
+    "ingested": "2026-09-27",
+    "generated_title": "Pacman DQN Agent"
+  },
+  "haas-courses-voice-note": {
+    "title": "Haas Course Schedule",
+    "note_path": "wiki/Courses/Haas Course Schedule.md",
+    "raw_path": "raw/haas-courses-voice-note.md",
+    "original_filename": "haas-courses-voice-note.md",
+    "sha256": "bf85749c00232aee",
+    "ingested": "2026-09-29",
+    "generated_title": "Agentic AI Fundamentals"
+  },
+  "career-history-voice-note": {
+    "title": "Career History",
+    "note_path": "wiki/Career/Career History.md",
+    "raw_path": "raw/career-history-voice-note.md",
+    "original_filename": "career-history-voice-note.md",
+    "sha256": "3e934fc639fdbf3f",
+    "ingested": "2026-09-29",
+    "generated_title": "Career Progression Summary"
+  }
+}

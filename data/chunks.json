@@ -1,0 +1,905 @@
+[
+ {
+  "id": "raw/career-history-voice-note.md#0",
+  "path": "raw/career-history-voice-note.md",
+  "section": "(top)",
+  "kind": "raw",
+  "text": "Cool. Next, I'll do um, my career progression. I'll include some facts that are testable later. So I graduated from Vanderbilt in 2018, where I studied human and organizational development and a minor in English literature, which I got at Oxford University during my semester abroad in 2017. Um, from there, I did Teach for America. I was a K through five special education teacher in Chicago Public Schools for two years, and then in Acero Charter Network Schools in Chicago for two more years. Um, I taught a lot of social emotional education in the low income neighborhoods of Englewood, which is a primarily black neighborhood, um, poverty, gun violence, addiction, really, really challenging circumstances. Um, and then at Acero Marquez, which is a charter school in the back of the yards neighborhood, uh, mostly first generation Mexican immigrants. Um, loved the kids, loved the families, incredibly hard job. Um, I was teaching from June of 2018 until November 2021. Um, so I was in the classroom during COVID. Um, we did remote learning, returned to in-person, um, and that was super challenging. Um, in November of 2021, I got my first role in EdTech. I was hired as an implementation specialist at ClassClick. And In this role, I learned about customer success, implementation, startups, um, product, a lot of good things. We were only about 30 people in the company, so I got to really understand how all the teams work together and fit together to build a product for schools. Um, I was in that role for about a year, and then in November of 2022, I joined Paper Education, which was a big tutoring um, company. that provided virtual tutoring for students. Um, much bigger company, about 600 employees when I was there, and was valued at a billion dollars, although I'm sure the valuation went down post-COVID um, because times were tough. I was in that role until August of 2023, when my role was eliminated due to external factors: the downturn in the ed tech landscape coming out of COVID, when schools were losing funding and becoming much more stringent on which tools they were purchasing. Paper laid off about 33% of the company that year. Um, and then I started my last and final ed tech startup role in January of 2024. Um, I was a customer success manager for strategic accounts at Beable. Um, which was started by Saki Dodelson. She previously sold a really big ed tech company for about 600 million. So it was a really successful ed tech exit. Um, but the role did not challenge me in the ways I was hoping, and I wanted a new role outside of education. So in 2024, I applied for business school. Um, I wanted to stay in California, so I applied only to Stanford, UC Berkeley Haas, and um, UCLA Anderson, and got into Haas and Anderson with a $60,000 scholarship for both. Um, I almost decided to go to Anderson because I loved living in Southern California. I was living in San Diego at the time and um, got married in LA around that time, but ultimately decided to come to Haas after visiting for days at Haas and really just being inspired by the people and the Bay Area and being so close to Silicon Valley. Um, Haas has been a great experience for me. It's opened a ton of doors for me professionally. This summer, I worked as a MBA intern on the business finance team at Workday. Um, got to do some finance and strategy projects, which I really enjoyed with the Global Partner Organization and specifically the Marketplace team, which is a new venture within Workday. Um, so that was a lot of fun. I did a lot of the financial modeling and projections for Marketplace, as well as for monetizing AI agents within the platform um, and some other strategic projects. So really enjoyed that. Um, and I'll be going back full time to Workday in summer or fall of 2027 after I graduate from Haas. So um, scheduled to graduate from Haas in May 2027 and excited to launch my career in corporate tech and um, finance and strategy."
+ },
+ {
+  "id": "raw/custom-llm-readme.md#0",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment",
+  "kind": "raw",
+  "text": "**Author:** Amelia Roeschel\n**Model:** [nanoGPT](https://github.com/karpathy/nanoGPT) (Andrej Karpathy), word-token variant \u2014 2 blocks, 4 heads, 64-dim embeddings, 48-token context, trained with PyTorch + AdamW on CPU.\n**What this is:** two small experiments that train a *tiny* language model from scratch and inspect, step by step, how text becomes predictions and how a neural network learns. This is **not** a chat assistant \u2014 it continues sentences in the style of its training corpus.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#1",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 1. Overview & how to run",
+  "kind": "raw",
+  "text": "Two experiments, same model and settings, only the corpus changes:\n\n| | Experiment 1 | Experiment 2 |\n|---|---|---|\n| Corpus | Starter \"classroom\" sentences only | Classroom **+ 3 food/restaurant files** |\n| Training steps | 3,000 | 3,000 |\n| Learning rate | 0.001 | 0.001 |\n| Executed notebook | [custom_llm_experiment1_classroom.ipynb](custom_llm_experiment1_classroom.ipynb) | [custom_llm_experiment2_extended.ipynb](custom_llm_experiment2_extended.ipynb) |\n| Results folder | [llm_runs/exp1_classroom/](llm_runs/exp1_classroom/) | [llm_runs/exp2_extended/](llm_runs/exp2_extended/) |"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#2",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 1. Overview & how to run (part 2)",
+  "kind": "raw",
+  "text": "**To run it yourself:** open either notebook in Google Colab (default free CPU is enough) or locally with `pip install -r requirements.txt` and Jupyter. Set the three choices in **Section 1**, then **Runtime \u2192 Run all**. For Experiment 2, upload the three `corpus/*.txt` files into Colab's `corpus/` folder *before* Run all (keep `CORPUS = \"classroom\"` so they're **added** to the classroom sentences).\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#3",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 2. My three choices, and why",
+  "kind": "raw",
+  "text": "| Choice | Value | Why |\n|---|---|---|\n| **Corpus** | `classroom`, then `classroom` + 3 files | Experiment 1 is a clean baseline on the supplied sentences. Experiment 2 adds focused teaching material so I can measure the *effect of the corpus* with everything else held constant. |\n| **Training steps** | 3,000 | The recommended budget. One step = one guess-check-nudge on 32 example passages. Enough for a tiny model to clearly learn patterns on a small corpus without overtraining (the loss plateaus by ~step 1,200 \u2014 see \u00a76). |\n| **Learning rate** | 0.001 | The size of each weight nudge. Too **large** (e.g. 0.1) and the model overshoots and the loss diverges; too **small** (e.g. 1e-5) and it barely moves in 3,000 steps. 0.001 is the tested middle for AdamW; the notebook adds warmup + cosine decay. |"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#4",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 2. My three choices, and why > Corpus details",
+  "kind": "raw",
+  "text": "- **Sources & permissions:** all corpus files are original sentences I wrote for this assignment (`corpus/food_negation.txt`, `corpus/food_opposites.txt`, `corpus/food_sequence.txt`). No copyrighted, confidential, or personal data. Free to share.\n- **Format / extraction check:** all three are UTF-8 **plain text** (`.txt`), so no PDF extraction or OCR was needed. The corpus manifest recorded **0 warnings** for all three files ([corpus_manifest.json](llm_runs/exp2_extended/corpus_manifest.json)).\n- **Passages added:** 163 unique passages (negation 84, opposites 33, sequence 46), split at \u226447 tokens on sentence boundaries.\n- **Vocabulary:** grew from **136 \u2192 324 words**. Unknown-token rates: **training 0.0%**, held-out validation **0.23%** ([vocabulary_report.json](llm_runs/exp2_extended/vocabulary_report.json)).\n- **Split:** duplicates removed, then a 90/10 passage split \u2014 Exp 2: **4,279 train / 476 validation** passages. Validation passages never supply weight updates."
+ },
+ {
+  "id": "raw/custom-llm-readme.md#5",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 2. My three choices, and why > Corpus details (part 2)",
+  "kind": "raw",
+  "text": "---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#6",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 3. What I predicted, and what happened",
+  "kind": "raw",
+  "text": "**My prediction (written before training):**\n> I expect the untrained model to produce random gibberish, since its weights start random. More training steps should improve it \u2014 each step reinforces the corpus patterns \u2014 and expanding the corpus should help, because the model can only use words it has actually seen. But I don't expect it to ever be \"good\": it's tiny compared to ChatGPT or Claude. My core hypothesis is that **focus beats breadth for a model this small** \u2014 a narrow corpus (food/restaurants) limits the vocabulary it must learn, which should give it a better shot at coherent output and higher scores."
+ },
+ {
+  "id": "raw/custom-llm-readme.md#7",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 3. What I predicted, and what happened (part 2)",
+  "kind": "raw",
+  "text": "**What actually happened:** The untrained model *was* gibberish (\u2713). Training clearly worked (loss fell, samples became grammatical, scorable accuracy jumped to 83\u201386%). My \"narrow beats broad\" hypothesis was **partly confirmed and partly refuted**, in an interesting way:\n- \u2705 The narrow food corpus raised **coverage** (50% \u2192 58%) \u2014 it taught the vocabulary that made 8 previously-impossible questions answerable.\n- \u274c It did **not** teach the *reasoning*. The targeted categories (negation, opposites, sequence) stayed at **0 correct** even after they became scorable. Vocabulary \u2260 reasoning (see \u00a77 and \u00a78).\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#8",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 4. Run facts",
+  "kind": "raw",
+  "text": "| | Exp 1 | Exp 2 |\n|---|---|---|\n| Completed steps | 3,000 (not interrupted) | 3,000 (not interrupted) |\n| Elapsed time | 38.9 s | 52.3 s |\n| Hardware | Colab CPU (Linux x86_64, PyTorch 2.11 CPU) | same |\n| Parameters | 111,872 | 123,904 |\n| Vocabulary | 136 | 324 |\n\n*(Exp 2 has more parameters only because a larger vocabulary means a larger embedding table \u2014 the network architecture is identical.)*\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#9",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 5. How the model learns \u2014 traced through my actual data",
+  "kind": "raw",
+  "text": "The whole model plays one game: **predict the next word**, over and over, nudging its knobs to be less wrong. Here is that pipeline traced through real values from Experiment 2 ([inspection.json](llm_runs/exp2_extended/inspection.json), [tokenization.json](llm_runs/exp2_extended/tokenization.json)):"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#10",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 5. How the model learns \u2014 traced through my actual data (part 2)",
+  "kind": "raw",
+  "text": "1. **Corpus \u2192 tokens.** Text is chopped into word/punctuation **tokens**. `\"the customer ordered .\"` \u2192 `the`, `customer`, `ordered`, `.`\n2. **Token \u2192 ID.** Each unique token gets a number (an address). The word **`customer` is ID 80** in Exp 2's 324-word vocabulary.\n3. **ID \u2192 vector (embedding).** Each ID maps to a list of **64 numbers** representing its learned \"meaning.\" For `customer`, the first 5 numbers were:\n   - **Before training:** `[0.0272, -0.0302, -0.0213, -0.0190, 0.0252]` (random)\n   - **After training:** `[-0.0498, 0.0254, 0.0731, -0.1240, -0.0313]`\n   - The whole 64-number vector moved by an L2 distance of **0.65** \u2014 training reshaped what \"customer\" means to the model.\n4. **One gradient + weight update.** The first recorded update nudged coordinate 0 of `customer`'s embedding: value **0.027245**, gradient **0.000369**, warmup learning rate **1e-5** \u2192 new value **0.027235**. A microscopic step *downhill* on the loss. Multiply this by ~124k parameters \u00d7 3,000 steps and you get learning.\n5. **Prediction (next-token probabilities).** Given the prefix **`the customer`**, the model's top next-word guesses:\n   - **Before training:** essentially flat \u2014 top word only 0.6% (random across 324 words).\n   - **After training:** sharply peaked on sensible verbs \u2014 **recommended 19%, compared 18%, returned 17%, selected 16%, ordered 14%**. It learned that \"the customer ___\" is followed by an action.\n6. **Attention & context.** Each of the 4 attention heads lets a token look back at earlier tokens in the 48-token window and weight which ones matter for the next prediction (saved as `attention_rows` in inspection.json). That's how \"customer\" influences what comes after it.\n7. **Loss.** A single number for \"how wrong were the guesses\" \u2014 averaged over next-token targets. Falling loss = learning (see \u00a76).\n8. **Temperature** (inference only, no weight change) \u2014 see \u00a79."
+ },
+ {
+  "id": "raw/custom-llm-readme.md#11",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 5. How the model learns \u2014 traced through my actual data (part 3)",
+  "kind": "raw",
+  "text": "---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#12",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 6. Loss & samples",
+  "kind": "raw",
+  "text": "**Loss** (fixed evaluation panels of \u226420 training and \u226420 validation passages \u2014 small estimates, not full-corpus):\n\n| Step | Exp 1 train / val | Exp 2 train / val |\n|---|---|---|\n| 0 | 4.926 / 4.928 | 5.785 / 5.777 |\n| 1,500 | 0.682 / 0.718 | 0.802 / 0.711 |\n| 3,000 | 0.678 / 0.706 | 0.731 / 0.707 |\n\n**Loss curves** (fixed panels of \u226420 train + \u226420 validation passages):\n\n| Experiment 1 (classroom) | Experiment 2 (extended) |\n|---|---|\n| ![Experiment 1 loss curve](llm_runs/exp1_classroom/training_curves.svg) | ![Experiment 2 loss curve](llm_runs/exp2_extended/training_curves.svg) |\n\n*(If the SVGs don't render inline for you: [Exp 1 SVG](llm_runs/exp1_classroom/training_curves.svg) \u00b7 [Exp 2 SVG](llm_runs/exp2_extended/training_curves.svg) \u2014 the same plots also appear as cell outputs in the executed notebooks. Full numeric tables: [history.json](llm_runs/exp2_extended/history.json).)*"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#13",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 6. Loss & samples (part 2)",
+  "kind": "raw",
+  "text": "> **Note on comparing the two loss curves:** they look almost identical, but **loss is not directly comparable across different corpora/vocabularies.** Exp 2 has 324 words vs 136, so it starts *more* uncertain (higher loss) and a similar ending number reflects a harder prediction task. Loss only measures *fit to the model's own corpus* \u2014 not exam performance. The corpus extension's real effect shows up in the eval **coverage** and **success rate** (\u00a77), not the loss plot. *(Falling training loss alone does not demonstrate generalization \u2014 and here training and validation track together only because the synthetic corpus reuses templates.)*\n\n**Text samples** (same generation settings; full timelines in [Exp1 samples/](llm_runs/exp1_classroom/samples/) and [Exp2 samples/](llm_runs/exp2_extended/samples/)):"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#14",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 6. Loss & samples (part 3)",
+  "kind": "raw",
+  "text": "| Stage | Exp 2 sample |\n|---|---|\n| **Untrained (step 0)** | `pear professor bond doctor course harvest team physician journey...` \u2014 word salad, includes `<UNK>` |\n| **Halfway (step 1,500)** | `our school has a question about the new educator and lesson.` \u2014 real grammar appears |\n| **Final (step 3,000)** | `the different mango was mentioned in the harvest report yesterday.` \u2014 grammatical, and a food word (`mango`) has bled in |\n\n**Visible change:** from random word lists \u2192 grammatical sentences that echo the corpus. The food vocabulary appears only occasionally in samples because the 163 food passages are just **3.4%** of the corpus \u2014 a dilution that matters for \u00a78.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#15",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 7. Evaluations \u2014 the 48-case suite",
+  "kind": "raw",
+  "text": "An **eval** is a fixed test: a prompt, four single-word choices, an answer key, and a scoring rule. The suite ([evals/language_evals.json](evals/language_evals.json), unchanged) is the **exam**; the corpus is the **study material**. **Score = 1** if the model gives the correct choice the highest probability among the four, else 0. Ties get 0. Cases whose prompt/answer words are unknown to the model are **unscorable** (0 in all-case success). This scores next-word *selection*, not the separately-saved free continuation.\n\n**Three metrics:** *coverage* = can the model attempt the question (are its words in vocab)? \u00b7 *scorable accuracy* = of attempted, how many right? \u00b7 *all-case success* = of all 48, how many right?"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#16",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 7. Evaluations \u2014 the 48-case suite > The required four-row comparison",
+  "kind": "raw",
+  "text": "| Experiment | Stage | All-case success | Scorable accuracy | Coverage |\n|---|---|---|---|---|\n| **Exp 1 \u2014 classroom** | Untrained | 9/48 (18.8%) | 37.5% | 50% |\n| **Exp 1 \u2014 classroom** | **Trained** | **20/48 (41.7%)** | **83.3%** | 50% |\n| **Exp 2 \u2014 extended** | Untrained | 8/48 (16.7%) | 28.6% | 58% |\n| **Exp 2 \u2014 extended** | **Trained** | **24/48 (50.0%)** | **85.7%** | **58%** |\n\n**All four result sets:**\n[Exp1 untrained](llm_runs/exp1_classroom/language_evals/untrained/) \u00b7 [Exp1 trained](llm_runs/exp1_classroom/language_evals/final/) \u00b7 [Exp2 untrained](llm_runs/exp2_extended/language_evals/untrained/) \u00b7 [Exp2 trained](llm_runs/exp2_extended/language_evals/final/)"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#17",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 7. Evaluations \u2014 the 48-case suite > Leakage / separation checks",
+  "kind": "raw",
+  "text": "Eval prompts, answer choices, keys, and outputs were kept **out of all training input**. The notebook's own separation check withheld the 16 reserved-prefix passages before splitting/vocab ([eval_separation.json](llm_runs/exp2_extended/eval_separation.json)), and I ran an automated check confirming **none of my three corpus files contain any exact eval prompt**. My food sentences teach the *skills* with different people, objects, and wording; ordinary word overlap (e.g. \"milk\", \"hot\") is allowed and necessary for coverage.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#18",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 8. The corpus extension \u2014 what I chose, and honest results",
+  "kind": "raw",
+  "text": "**Categories chosen: negation, opposites, sequence.** I picked these because (a) all three scored **0% coverage** in Experiment 1 \u2014 the classroom corpus never taught their vocabulary \u2014 and (b) all three fit a single narrow topic (a restaurant), which tests my \"focus beats breadth\" hypothesis. My teaching material:\n- **`food_negation.txt`** \u2014 order corrections: *\"the guest did not order tea. she ordered milk. the guest ordered milk.\"*\n- **`food_opposites.txt`** \u2014 the *\"the opposite of X is Y\"* frame with food pairs (sweet/sour, fresh/stale), plus the exam's pairs in reversed order.\n- **`food_sequence.txt`** \u2014 cooking/dining steps: *\"first chop the onion. then fry it. the last step is fry.\"*\n\n**How the targeted categories moved** (coverage vs. Experiment 1, where all three were 0%):"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#19",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 8. The corpus extension \u2014 what I chose, and honest results (part 2)",
+  "kind": "raw",
+  "text": "| Category | Exp 1 coverage | Exp 2 coverage | Exp 2 correct |\n|---|---|---|---|\n| Negation | 0% | **67%** | 0/3 |\n| Opposites | 0% | **33%** | 0/3 |\n| Sequence | 0% | **33%** | 0/3 |\n\n**What this means \u2014 the honest finding:** the extension worked *at the vocabulary level* (coverage rose from 0%, so questions became answerable) but **not at the reasoning level** (still 0 correct). Teaching the words milk/tea/hot/cold/breakfast did not teach the model to *track a negation*, *retrieve an antonym*, or *order events*. Those require compositional reasoning a 2-layer model can't acquire from 163 diluted example passages."
+ },
+ {
+  "id": "raw/custom-llm-readme.md#20",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 8. The corpus extension \u2014 what I chose, and honest results (part 3)",
+  "kind": "raw",
+  "text": "**Where the overall gain came from:** the trained score rose 41.7% \u2192 50% (+4 cases), but the +4 came almost entirely from **new_wording (4/8 \u2192 8/8)** \u2014 general robustness on familiar patterns \u2014 *not* my target categories. Extra, varied data made the model steadier on things it already half-knew, rather than unlocking new skills.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#21",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 9. Temperature (inference only)",
+  "kind": "raw",
+  "text": "Temperature reshapes *how* the model samples from its probabilities **without changing any weights**. Low temp = greedier/safer/more repetitive; high temp = more random/varied/more errors. Examples ([temperature_comparison.json](llm_runs/exp2_extended/temperature_comparison.json), same seed & start token):\n\n| Temp | Sample |\n|---|---|\n| 0.3 | `the local credit was mentioned in the return report yesterday.` |\n| 0.8 | `they compared the new buyer with another buyer at the store.` |\n| 1.2 | `they compared the new buyer with another buyer at the store.` |\n\nBecause the trained distribution is sharply peaked, the visible effect on these short samples is modest \u2014 but the mechanism (reweighting the same probabilities at generation time) is the point.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#22",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 10. One limitation + proposed next experiment",
+  "kind": "raw",
+  "text": "**Limitation:** the model learns **vocabulary and surface grammar, but not reasoning.** It can produce *\"the guest ordered milk\"* yet cannot answer *\"the guest did not order tea, so she ordered ___\"* \u2014 it doesn't compose the negation. This is a scale limit, not a bug.\n\n**Proposed next experiment:** hold the corpus fixed and **scale the model's depth** (e.g. 2 \u2192 4 blocks) and/or **10\u00d7 the targeted teaching data**, then re-run the 48 evals to test whether negation/opposites/sequence *accuracy* (not just coverage) improves. This isolates whether the ceiling is the data or the model size."
+ },
+ {
+  "id": "raw/custom-llm-readme.md#23",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 10. One limitation + proposed next experiment > My questions along the way (reflections)",
+  "kind": "raw",
+  "text": "- *\"The Exp 2 loss graph doesn't look better than Exp 1.\"* \u2014 Correct, and it taught me that **loss measures corpus fit, not exam performance, and isn't comparable across vocabularies.** The real gain is in eval coverage/accuracy.\n- *\"Would reasoning emerge with a much bigger vocabulary and millions of training steps?\"* \u2014 Not from steps alone. **Three things must scale together: far more varied data, a much bigger/deeper model (hundreds of billions of params vs my ~124k), and more compute.** Millions of steps on *this* tiny setup would just **overfit** \u2014 memorize the 163 sentences harder \u2014 which the flat loss curve past step ~1,200 already hints at. Even frontier models are doing sophisticated next-word prediction at scale, the *same core operation* my model does; scale is what makes reasoning-like behavior emerge.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#24",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 11. Chat interface",
+  "kind": "raw",
+  "text": "A working terminal/notebook interface where you type a prompt and the **trained nanoGPT** replies (it continues a sentence; it does not answer questions). It loads `model.pt` + saved vocabulary from a run; each prompt starts fresh (no conversation memory); unknown words become `<UNK>`; context is capped at 48 tokens. Generating replies does **not** retrain the model.\n\n**Launch:**\n```bash\npython chat.py --model llm_runs/exp2_extended/model.pt\n```\nOr use the notebook's **Section 10** cell with the trained model already in memory.\n\n**Model/run used:** Experiment 2 (`exp2_extended`, 3,000 steps). Full transcript: [chat_transcript.json](llm_runs/exp2_extended/chat_transcript.json) (8 interactions).\n\n**Actual interactions:**"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#25",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 11. Chat interface (part 2)",
+  "kind": "raw",
+  "text": "| # | My prompt | Model reply | Note |\n|---|---|---|---|\n| 1 | `the customer` | `returned the offering after checking the price .` | coherent continuation |\n| 2 | `the waiter brought` | `juice .` | plausible food word |\n| 3 | `first chop an onion` | `.` | **limitation:** `an` was an **unknown word** \u2192 the model stalled |\n| 4 | `the customer did not order milk` | `.` | **limitation:** no negation reasoning \u2014 it doesn't infer a correction |\n| 5 | `why did the customer leave` | `mango .` | **limitation:** `why` and `leave` are **unknown**; it can't answer a question, just emits a word |\n| 6 | `the waiter brought` | `taste .` | continues (note: fresh context each prompt, so replies vary) |\n| 7 | `first bring the` | `step .` | sequence-ish continuation |\n| 8 | `the guest did not order` | `milk .` | grabs a food word, but still no true negation logic |"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#26",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 11. Chat interface (part 3)",
+  "kind": "raw",
+  "text": "**Screenshots:** [question limitation](llm_runs/exp2_extended/chat_evidence/chat_question_limitation.png) \u00b7 [negation](llm_runs/exp2_extended/chat_evidence/chat_negation.png) \u00b7 [sequence](llm_runs/exp2_extended/chat_evidence/chat_sequence.png) \u00b7 [waiter](llm_runs/exp2_extended/chat_evidence/chat_waiter.png)\n\n**One chat limitation (highlighted):** the interface continues text rather than answering. Prompt #5, *\"why did the customer leave,\"* returned *\"mango\"* while flagging *why* and *leave* as unknown words \u2014 it can neither understand a question nor reason about it, which is exactly the scale limitation described in \u00a710.\n\n---"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#27",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 12. Repository layout",
+  "kind": "raw",
+  "text": "```\ncustomllm/\n\u251c\u2500\u2500 README.md                                  \u2190 this file (grading entry point)\n\u251c\u2500\u2500 custom_llm_experiment1_classroom.ipynb     \u2190 executed notebook, Exp 1\n\u251c\u2500\u2500 custom_llm_experiment2_extended.ipynb      \u2190 executed notebook, Exp 2\n\u251c\u2500\u2500 corpus/                                     \u2190 my teaching sources (Exp 2)\n\u2502   \u251c\u2500\u2500 food_negation.txt\n\u2502   \u251c\u2500\u2500 food_opposites.txt\n\u2502   \u2514\u2500\u2500 food_sequence.txt\n\u251c\u2500\u2500 evals/\n\u2502   \u251c\u2500\u2500 language_evals.json                     \u2190 the 48 fixed tests (unchanged)\n\u2502   \u2514\u2500\u2500 README.md                               \u2190 how to run the evals\n\u251c\u2500\u2500 llm_runs/\n\u2502   \u251c\u2500\u2500 exp1_classroom/                          \u2190 all Exp 1 results & weights\n\u2502   \u2514\u2500\u2500 exp2_extended/                           \u2190 all Exp 2 results & weights\n\u251c\u2500\u2500 nanogpt_model.py   run_evals.py   chat.py   custom_llm.py\n\u251c\u2500\u2500 embedding-viewer.html   requirements.txt   NANOGPT_LICENSE\n```"
+ },
+ {
+  "id": "raw/custom-llm-readme.md#28",
+  "path": "raw/custom-llm-readme.md",
+  "section": "Building a Custom LLM \u2014 Class 4 Assignment > 13. Reproduce the evals & chat",
+  "kind": "raw",
+  "text": "- **Re-run evals on saved weights:** `python run_evals.py --model llm_runs/exp2_extended/model.pt --output results/my-final-evals` (sends only the prompt to the model, never the answer key; saves CSV/JSON + a free continuation per case). Use `--stage untrained` with `model_untrained.pt` for the before-training set. See [evals/README.md](evals/README.md).\n- **Embedding viewer:** open `embedding-viewer.html` locally and load a run's `checkpoint.json` to compare a word's initial/final 64-D vector and neighbors.\n- **Chat:** `python chat.py --model llm_runs/exp2_extended/model.pt` (dependencies in `requirements.txt`).\n\n---\n\n*nanoGPT model \u00a9 Andrej Karpathy (see NANOGPT_LICENSE). Whole-word tokenization and the classroom instrumentation are classroom additions.*"
+ },
+ {
+  "id": "raw/haas-courses-voice-note.md#0",
+  "path": "raw/haas-courses-voice-note.md",
+  "section": "(top)",
+  "kind": "raw",
+  "text": "Okay, so let's start with my HOS classes. Um, first, I'm taking strategy, structure, and incentives with Greg LeBlanc. This covers economics, markets and firms, organizational design, um, and just kind of a bunch of other stuff. Um, and it meets on Tuesdays and Thursdays from 11 to 12:30 p.m. in room N570. Next, I'm taking... Fundamentals of Agentic AI with Pepe. Um, that's the class that I'm building this for. Um, in that class, we focus on LLMs and kind of the evolution of LLMs from uh, historical context to present day and what you can do with them um, with a lot of hands-on building. That meets on Tuesdays from 4 to 6 p.m. Um, in room N570. I'm taking Conflict Lab with Francesca. This is like a hands-on course where you practice difficult conversations at work. There's a lot of components of like couples therapy. Um, last week we did somatics. We talked about like giving a good apology, giving feedback, etc. Intent versus impact, stuff like that. And this is on Wednesday, on sorry, Thursdays. Um, from two to five in room N500. Then I am also taking corporate financial accounting with Tanya Paul. This is where we learn how to read a 10K and evaluate financial reports from an investor's perspective. Um, we're learning about things like revenue recognition and um, kind of some of the art and science behind how you report figures to either look more or less favorable. Um, for firms. This meets um, on Thursdays from 8 to 11 a.m. in N170. And then I'm also in Power and Politics with Cameron Anderson. Um, in this course, we talk about influence at work, how to leverage relationships and networks to basically build credibility, advocacy, Um, and influence, um, as well as the relating behaviors like trustworthiness, personability, and openness. Um, and this is on Monday and Wednesday from 2 to 4 p.m. So that's my response to number A."
+ },
+ {
+  "id": "raw/haas-courses-voice-note.md#1",
+  "path": "raw/haas-courses-voice-note.md",
+  "section": "(top) (part 2)",
+  "kind": "raw",
+  "text": "Addendum (added 2026-09-29, typed by Amelia): greg leblanc is correct. pepe alonso and francesca lebaron. power and politics is n170."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#0",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker",
+  "kind": "raw",
+  "text": "A private card catalog for the people you want to stay connected with at Berkeley.\nEach person is an index card: who they are, where you met, what you talked about,\nhow important they are, and how often you mean to reach out. The app works out\nwho is overdue and shows you a weekly follow-up list, so staying in touch stops\ndepending on memory. Every card belongs to exactly one account, and that\nownership is enforced by Postgres itself through Row Level Security \u2014 not by the\napplication code, and not by hiding a button in the interface.\n\n**Live app:** https://temporary-sonic-atoll-xkwtx4t.vercel.app\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#1",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Contents",
+  "kind": "raw",
+  "text": "- [Screenshots](#screenshots)\n- [Features](#features)\n- [Technology stack, and why](#technology-stack-and-why)\n- [Architecture](#architecture)\n- [Local setup](#local-setup)\n- [Environment variables](#environment-variables)\n- [Database schema](#database-schema)\n- [Authentication and ownership](#authentication-and-ownership)\n- [Tests](#tests)\n- [Grading evidence](#grading-evidence)\n- [Deployment](#deployment)\n- [Known limitations](#known-limitations)\n\n---\n\nScreenshots: _[to be added: the drawer, the follow-up calendar, sign-in, the add/edit form,\na validation error, and the two-account privacy test]_\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#2",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Features",
+  "kind": "raw",
+  "text": "**Contacts**\n- Add a contact with name, company, role, where you met, notes, and priority\n- Priority is limited to `high`, `medium`, or `low` \u2014 enforced in the database\n- Edit and delete your own contacts\n- Sort by recently added, name, priority, last contacted, or company\n- Filter by priority, by \"needs follow-up\", or by a free-text search across every field\n- Contacts survive a refresh, because they live in Neon Postgres\n\n**Staying in touch**\n- Record when you last spoke to someone\n- Choose a cadence: monthly, quarterly, annually, or a custom number of days\n- A \"Reach out this week\" list, ordered by who is most overdue\n- A month calendar showing when each person comes due"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#3",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Features (part 2)",
+  "kind": "raw",
+  "text": "**Interface**\n- Explicit loading, empty, success, and error states \u2014 never a blank screen\n- Works on phones and desktops; the month grid becomes an agenda list on small screens\n- Keyboard accessible, with visible focus styles and labelled form fields\n- Colour is never the only signal: priority and follow-up status are always written out\n\n**Security**\n- Row Level Security on the contacts table, with a separate policy per operation\n- Ownership is stamped by the database, never sent by the browser\n- Validation in three places: the browser, the API, and the database\n- No Postgres connection string exists anywhere in this project\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#4",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Technology stack, and why",
+  "kind": "raw",
+  "text": "| Layer | Choice | Why |\n| --- | --- | --- |\n| Frontend | React 18 + Vite | The assignment asks for a separated frontend. Vite builds a plain static site, which Vercel serves from its CDN with nothing to run. |\n| Styling | Tailwind CSS with a custom theme | Tailwind is the design system; every colour, typeface, and measurement lives in `tailwind.config.js`. The custom \"Card Catalog\" theme is what stops this looking like a default admin panel. |\n| Backend | Node + Express 5 | A standalone HTTP API with no knowledge of the web UI. A future mobile app can call the same endpoints without changing a line of it. |\n| Auth | Neon Managed Better Auth | Required by the assignment. It issues a short-lived signed token that both our API and Postgres can verify independently. |\n| Data access | Neon Data API | A REST layer over Postgres that carries the user's own token, so Row Level Security applies to every query. |\n| Database | Neon Postgres | Required by the assignment. Row Level Security is the reason ownership is trustworthy. |\n| Tests | Vitest + supertest | Fast, and runs the real Express app without needing a live database. |\n| Hosting | Vercel | Required by the assignment. One deploy serves the static frontend and runs the API as a serverless function. |"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#5",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Technology stack, and why > Why the frontend and backend are separate",
+  "kind": "raw",
+  "text": "The assignment could be satisfied by a browser talking straight to the Neon Data\nAPI. This project deliberately does not do that. The browser talks to an Express\nAPI, and only that API talks to the database.\n\nThat costs a little more work and buys two things:\n\n1. **A trusted place to validate.** Anything running in a browser can be edited\n   by the person using it. Validation only counts when it happens somewhere the\n   user cannot reach.\n2. **A reusable API.** `apps/api` imports nothing from `apps/web`. Pointing an\n   iOS app at `/api/contacts` would require no backend changes at all.\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#6",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture",
+  "kind": "raw",
+  "text": "Everything the browser talks to is on **one origin \u2014 this app's own**. It never\ncontacts Neon directly."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#7",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture (part 2)",
+  "kind": "raw",
+  "text": "```\n   Browser \u2014 React + Vite\n      \u2502\n      \u251c\u2500\u2500 POST /api/auth/sign-in  \u2500\u2500\u2500\u2510\n      \u2502   (also sign-up, sign-out,   \u2502   same origin, so the session\n      \u2502    get-session, token)       \u2502   cookie is first-party\n      \u2502                              \u2502\n      \u2514\u2500\u2500 GET  /api/contacts  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n          Authorization: Bearer \u2026    \u2502\n                                     \u25bc\n                        Express API \u2014 apps/api\n                          \u2502\n        \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n        \u2502                                    \u2502\n   auth proxy                          contacts routes\n   forwards to Neon,                     1. verify the token's signature\n   rewrites the cookie                      against Neon's public keys\n   for our domain                        2. validate; strip any field the\n        \u2502                                   client must not set\n        \u2502                                 3. forward that same user token\n        \u25bc                                    \u2502\n   Neon Managed Better Auth                  \u25bc\n   issues a signed token               Neon Data API\n   that expires in 15 minutes          a REST layer over Postgres\n                                             \u2502\n                                             \u25bc\n                                       Neon Postgres\n                                       Row Level Security filters every\n                                       query to rows where\n                                       user_id = auth.user_id()\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#8",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture > The request flow, in words",
+  "kind": "raw",
+  "text": "1. You sign in against `/api/auth`, on this app's own domain. Express forwards\n   that to Neon Auth and passes the session cookie back, rewritten so it belongs\n   to our domain.\n2. Neon Auth issues a **signed token** saying who you are, signed with a private\n   key only Neon holds.\n3. The browser asks our API for contacts, attaching that token.\n4. The API **verifies the signature** using Neon's published public key. A forged\n   token fails here, because forging one would require Neon's private key.\n5. The API validates the request, then calls the Neon Data API **passing your\n   token along unchanged**.\n6. Postgres reads the token, so `auth.user_id()` returns your user ID, and the\n   Row Level Security policies filter the query to your rows."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#9",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture > Why sign-in goes through our own backend",
+  "kind": "raw",
+  "text": "The first version had the browser call Neon Auth directly. It worked for some\npeople and silently failed for others, which is the worst kind of bug.\n\nThe cause: Neon Auth is on a different domain (`\u2026neon.tech`) to the app\n(`\u2026vercel.app`), so its session cookie was a **third-party cookie**. Safari\nblocks those by default and Chrome is phasing them out. The account would be\ncreated, then the app would immediately behave as though nobody was signed in.\n\nRouting sign-in through `/api/auth` makes the browser talk only to our own\ndomain, so the cookie is first-party and every browser keeps it. Three details\nhad to be right, and each one silently voided the cookie on its own:"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#10",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture > Why sign-in goes through our own backend (part 2)",
+  "kind": "raw",
+  "text": "| Cookie attribute | Handling | Why |\n| --- | --- | --- |\n| `Secure` | **kept** | The `__Secure-` name prefix is only valid on a cookie that carries `Secure`. Removing it invalidates the whole cookie. |\n| `Partitioned` | **removed** | It is for cross-site cookies, and is invalid alongside `SameSite=Lax`. |\n| `SameSite` | `None` \u2192 `Lax` | The cookie is first-party now. |\n\nOne more: Neon only issues the cookie when the request carries an `Origin`\nheader, and browsers omit `Origin` on same-origin GETs \u2014 which is now most of\nour traffic. So the proxy always sends one.\n\nThis is also the clearest example of the separate backend earning its keep: it\nis not just passing requests along, it is solving a problem the frontend\ncannot solve alone."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#11",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture > Why the backend forwards your token",
+  "kind": "raw",
+  "text": "A backend can reach Neon Postgres two ways, and they have very different\nsecurity properties:\n\n| Approach | What happens to Row Level Security |\n| --- | --- |\n| Connect directly with `DATABASE_URL` | The connection is the **database owner**, which **bypasses RLS entirely**. Ownership would rest solely on application code being bug-free. |\n| **Call the Data API, forwarding the user's token** \u2190 what this project does | Postgres sees the request as that specific user. **RLS enforces ownership inside the database.** |\n\nThe second approach means the database is the last line of defence. If the API\nhad a bug and asked for every row in the table, Postgres would still return only\nthe rows belonging to whoever made the request."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#12",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Architecture > Why the backend forwards your token (part 2)",
+  "kind": "raw",
+  "text": "A fair question: what stops someone skipping our API and calling the Neon Data\nAPI directly with their own token? Nothing \u2014 and that is fine. They would get\nback exactly their own contacts, because RLS does not care which program sent\nthe query. That is precisely why the security lives in the database rather than\nin the API.\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#13",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Local setup",
+  "kind": "raw",
+  "text": "**You need Node 20 or newer.** Check with `node --version`. If it is missing,\ninstall the LTS build from [nodejs.org](https://nodejs.org).\n\n```bash\ngit clone <your-repo-url>\ncd networking-tracker\nnpm install\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#14",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Local setup > Set up Neon",
+  "kind": "raw",
+  "text": "1. Create a free project at [neon.tech](https://neon.tech).\n2. **Auth \u2192 Enable.** Open the **Configuration** tab and copy the **Auth URL**.\n3. **Your database \u2192 Data API \u2192 Enable.** Choose **Use Managed Better Auth** as\n   the JWT provider, and tick **Grant public schema access**. Copy the\n   **Data API URL**.\n4. Open the **SQL Editor** and run the contents of [`db/schema.sql`](db/schema.sql).\n5. Go back to the **Data API** page and click **Refresh schema cache**.\n   The Data API caches your table definitions, so a brand new table returns 404\n   until you do this. It catches everybody once."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#15",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Local setup > Configure and run",
+  "kind": "raw",
+  "text": "```bash\ncp .env.example .env.local\n```\n\nPaste your two URLs into `.env.local`, then:\n\n```bash\nnpm run dev\n```\n\nThis starts both halves at once \u2014 the Express API on port 3001 and the React app\non port 5173. Open **http://localhost:5173**.\n\nIn development, Vite proxies `/api` through to the Express server, which is\nexactly how Vercel routes it in production. The frontend code is identical in\nboth places, and there is no CORS to configure."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#16",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Local setup > Every command",
+  "kind": "raw",
+  "text": "| Command | What it does |\n| --- | --- |\n| `npm run dev` | Run the API and the web app together |\n| `npm run dev:api` | Just the Express API, on port 3001 |\n| `npm run dev:web` | Just the React app, on port 5173 |\n| `npm run build` | Build the production frontend into `apps/web/dist` |\n| `npm test` | Run the whole test suite once |\n| `npm run test:watch` | Re-run tests as you edit |\n\nThere is also a design preview at **http://localhost:5173/preview.html** \u2014 the\ninterface rendered with sample data, no sign-in and no database. It is excluded\nfrom the production build.\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#17",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Environment variables",
+  "kind": "raw",
+  "text": "Copy `.env.example` to `.env.local` and fill in the real values.\n`.env.local` is listed in `.gitignore` and is never committed.\n\n| Variable | Visibility | What it is |\n| --- | --- | --- |\n| `NEON_AUTH_BASE_URL` | **Server only** | Two jobs: verifying incoming tokens against Neon's public keys, and the upstream target of the auth proxy |\n| `NEON_DATA_API_URL` | **Server only** | Where the API sends database requests |\n| `PORT` | Server only | Local API port. Not needed in production. |"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#18",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Environment variables > There are no public variables",
+  "kind": "raw",
+  "text": "This project ships **no `VITE_` variables at all**. The browser talks only to\nthis app's own `/api` routes \u2014 for contacts *and* for signing in \u2014 so it never\nneeds a Neon URL, and none is compiled into the JavaScript it downloads.\n\nThat is a consequence of the auth proxy described in\n[Authentication](#authentication-and-ownership): sign-in goes through\n`/api/auth`, which Express forwards to Neon. Fewer moving parts in the browser,\nand one less piece of infrastructure exposed to it."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#19",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Environment variables > A deliberate difference from the brief",
+  "kind": "raw",
+  "text": "The assignment lists `NEXT_PUBLIC_NEON_AUTH_URL`, `NEXT_PUBLIC_NEON_DATA_API_URL`,\n`DATABASE_URL`, and `NEON_AUTH_COOKIE_SECRET`.\n\n- The `NEXT_PUBLIC_` prefix is specific to Next.js. This project is React with\n  Vite and a separate Express backend. It ended up needing **no** public\n  variable of any kind, for the reason above.\n- **`DATABASE_URL` and `NEON_AUTH_COOKIE_SECRET` are not used at all.** All\n  database access goes through the Data API carrying the user's token, and\n  sessions are managed by Neon rather than by our own cookies.\n\n  Not having `DATABASE_URL` anywhere is a security win rather than an omission:\n  a connection string that does not exist in the repository cannot leak from\n  it. It would also have been actively harmful here \u2014 see\n  [Why the backend forwards your token](#why-the-backend-forwards-your-token)."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#20",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Environment variables > A deliberate difference from the brief (part 2)",
+  "kind": "raw",
+  "text": "Not needing a Postgres connection string is a security improvement, not a gap: a\ncredential that never exists in the project cannot be committed, leaked, or\nmisused. It is also why nothing in this repository can bypass Row Level Security.\n\n---\n\nDatabase schema: The full definition, with comments, is in [`db/schema.sql`](db/schema.sql)."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#21",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Database schema > `contacts`",
+  "kind": "raw",
+  "text": "| Column | Type | Constraints | Purpose |\n| --- | --- | --- | --- |\n| `id` | `bigint` | primary key, generated | Row identifier |\n| `user_id` | `text` | **not null, default `auth.user_id()`** | Who owns this card |\n| `name` | `text` | not null, must not be blank | The person's name |\n| `company` | `text` | max 200 chars | Where they work |\n| `role` | `text` | max 200 chars | Their job title |\n| `where_met` | `text` | max 200 chars | Where you met them |\n| `notes` | `text` | max 5000 chars | What you talked about |\n| `priority` | `text` | not null, **must be `high`, `medium`, or `low`** | How important the relationship is |\n| `last_contacted_on` | `date` | optional, not in the future | When you last spoke |\n| `cadence` | `text` | not null, one of `monthly`, `quarterly`, `annually`, `custom` | How often to reach out |\n| `cadence_days` | `integer` | 1\u20133650, required only when cadence is `custom` | Custom interval length |\n| `created_at` | `timestamptz` | not null, defaults to now | When the card was filed |\n| `updated_at` | `timestamptz` | not null, maintained by a trigger | When it last changed |"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#22",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Database schema > Two constraints worth pointing out",
+  "kind": "raw",
+  "text": "**`user_id` has a default, not an input.** The column defaults to\n`auth.user_id()`, which returns the ID of whoever is making the request. The\nbrowser never sends a `user_id` \u2014 the API strips the field if it is present, and\nthe database fills it in from the token. So there is no request you can craft\nthat files a card under someone else's name.\n\n**`cadence_days` must agree with `cadence`.** A single constraint enforces that\na custom cadence has a day count and that every other cadence does not:\n\n```sql\nCHECK ((cadence = 'custom') = (cadence_days IS NOT NULL))\n```\n\nThere is also a trigger that refreshes `updated_at` on every edit and forces\n`user_id` back to its original value, so an update can never transfer ownership\neven before the RLS policy is consulted.\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#23",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Authentication and ownership > Signing in",
+  "kind": "raw",
+  "text": "Sign-up, sign-in, and sign-out all go through **Neon Managed Better Auth**. This\nproject never stores or even sees a password. Neon issues a signed token that\nexpires after about 15 minutes; the frontend requests a fresh one before each API\ncall rather than holding on to it.\n\nThe browser reaches Neon Auth through `/api/auth` on this app's own domain\nrather than calling it directly, so the session cookie is first-party and works\nin every browser. The reasoning, and the three cookie attributes that have to be\nexactly right, are in\n[Why sign-in goes through our own backend](#why-sign-in-goes-through-our-own-backend)."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#24",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Authentication and ownership > The ownership rule",
+  "kind": "raw",
+  "text": "Row Level Security is enabled on `contacts`, with a separate policy for each\noperation. Every one of them compares the row's owner against the signed-in user:\n\n```sql\nALTER TABLE contacts ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY contacts_select_own ON contacts\n  FOR SELECT TO authenticated\n  USING ( (select auth.user_id()) = user_id );\n\nCREATE POLICY contacts_insert_own ON contacts\n  FOR INSERT TO authenticated\n  WITH CHECK ( (select auth.user_id()) = user_id );\n\nCREATE POLICY contacts_update_own ON contacts\n  FOR UPDATE TO authenticated\n  USING      ( (select auth.user_id()) = user_id )\n  WITH CHECK ( (select auth.user_id()) = user_id );\n\nCREATE POLICY contacts_delete_own ON contacts\n  FOR DELETE TO authenticated\n  USING ( (select auth.user_id()) = user_id );\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#25",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Authentication and ownership > `USING` versus `WITH CHECK`",
+  "kind": "raw",
+  "text": "These two clauses answer different questions, and the update policy needs both:\n\n- **`USING`** \u2014 *which existing rows may I touch?* This is what stops you editing\n  someone else's contact.\n- **`WITH CHECK`** \u2014 *what is the row allowed to look like afterwards?* This is\n  what stops you editing your own contact so that it belongs to somebody else.\n\nWith only `USING`, you could take a row you legitimately own and rewrite its\n`user_id` to another person's. `WITH CHECK` re-tests the row after the change and\nrejects it.\n\n`SELECT` and `DELETE` only take `USING`, because neither writes a row. `INSERT`\nonly takes `WITH CHECK`, because there is no existing row to test."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#26",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Authentication and ownership > Why RLS matters more than the API",
+  "kind": "raw",
+  "text": "Enabling Row Level Security on a table means Postgres denies everything by\ndefault, and only the policies above let anything through. The three states:\n\n| State | Result |\n| --- | --- |\n| RLS disabled | Every authenticated user can read every row |\n| RLS enabled, no policies | Nobody can read anything |\n| RLS enabled with policies | Each user sees only their own rows |\n\nBecause the API forwards the user's own token rather than connecting as an admin,\nthese policies apply to every request the app makes. A bug in the API cannot leak\nanother user's contacts, because the database would refuse to return them."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#27",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Authentication and ownership > Validation happens three times",
+  "kind": "raw",
+  "text": "| Where | What it catches | Can a user bypass it? |\n| --- | --- | --- |\n| Browser (`shared/validate.js`) | Typos, before a round trip | **Yes** \u2014 anyone can edit their own browser |\n| Express API (same module) | Everything, on a trusted server | No |\n| Postgres `CHECK` constraints | Invalid priority, blank name, cadence mismatch | No |\n\nThe browser and the API run the *same* validation module, so the rules cannot\ndrift apart. The browser copy is a convenience; the two that count are the ones\nthe user cannot reach.\n\n---\n\nTests: ```bash\nnpm test\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#28",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Tests > What is covered",
+  "kind": "raw",
+  "text": "**`tests/validate.test.js`** \u2014 the validation rules, as pure functions\n- Empty, whitespace-only, missing, and over-long names are rejected\n- Every valid priority is accepted; anything else is rejected\n- A custom cadence without a day count is rejected\n- Impossible dates (`2026-02-31`) and future dates are rejected\n- `user_id`, `id`, and `created_at` are stripped from client input\n\n**`tests/cadence.test.js`** \u2014 the follow-up maths\n- Quarterly contact last spoken to 100 days ago \u2192 9 days overdue\n- Monthly contact last spoken to 28 days ago \u2192 due in 2 days\n- Never contacted \u2192 surfaced as needing a first hello\n- A custom 14-day cadence is honoured\n- The 7-day boundary between \"due this week\" and \"upcoming\" is exact\n- Each test passes a fixed date, so results never change with the calendar"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#29",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Tests > What is covered (part 2)",
+  "kind": "raw",
+  "text": "**`tests/contacts.route.test.js`** \u2014 the real Express app, via HTTP\n- A request with no token gets 401, and never reaches the database\n- An empty name gets 400 with the message \"Name is required.\"\n- `priority: \"urgent\"` gets 400 and never reaches the database\n- A `user_id` sent by the client is stripped before the database sees it\n- Another user's contact returns 404, not 403\n- An unrecognised sort column is ignored rather than passed through\n- An unexpected server error returns a generic message, leaking no internals\n\nAuthentication and the database are replaced with test doubles here, so the suite\nruns offline in under a second. Real signature verification and real Row Level\nSecurity are proven separately by the two-account test below.\n\n---\n\nGrading evidence: Everything below was run against the **deployed application**, not a local copy."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#30",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > Automated tests passing",
+  "kind": "raw",
+  "text": "```\n$ npm test\n\n RUN  v5.0.0\n\n \u2713 tests/cadence.test.js  (18 tests)\n \u2713 tests/validate.test.js (31 tests)\n \u2713 tests/contacts.route.test.js (28 tests)\n\n Test Files  3 passed (3)\n      Tests  77 passed (77)\n   Duration  402ms\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#31",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > Invalid input fails safely",
+  "kind": "raw",
+  "text": "Both rejected by the deployed API, with a message a person can act on, and\nneither reached the database:\n\n```\n$ curl -X POST https://<live-app>/api/contacts \\\n    -H \"Authorization: Bearer <user A token>\" \\\n    -d '{\"name\":\"Bad\",\"priority\":\"urgent\"}'\n\n{\"error\":\"Invalid contact.\",\n \"message\":\"Priority must be one of: high, medium, low.\",\n \"fields\":{\"priority\":\"Priority must be one of: high, medium, low.\"}}   [400]\n```\n\n```\n$ curl -X POST https://<live-app>/api/contacts \\\n    -H \"Authorization: Bearer <user A token>\" \\\n    -d '{\"name\":\"   \"}'\n\n{\"error\":\"Invalid contact.\",\n \"message\":\"Name is required.\",\n \"fields\":{\"name\":\"Name is required.\"}}                                [400]\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#32",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > Ownership is stamped by the database",
+  "kind": "raw",
+  "text": "User A created a contact **without sending a `user_id`**. Postgres filled it in\nfrom the token via the `auth.user_id()` column default:\n\n```\n$ curl -X POST https://<live-app>/api/contacts -H \"Authorization: Bearer <A>\" \\\n    -d '{\"name\":\"Marcus Chen\",\"company\":\"Zebra Technologies\",\"priority\":\"high\",\n         \"cadence\":\"quarterly\",\"last_contacted_on\":\"2026-05-20\"}'\n\n{\"contact\":{\"id\":1,\n            \"user_id\":\"f0916764-b951-4826-9c75-f2b68b5c706d\",   <- set by Postgres\n            \"name\":\"Marcus Chen\", \"priority\":\"high\", ...}}       [201]\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#33",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > Two accounts cannot see each other's contacts",
+  "kind": "raw",
+  "text": "Two accounts were created on the live site. User A filed contact `#1`. User B\nthen tried to reach it \u2014 first through the API, then **by skipping the API\nentirely and querying the database directly with their own token**:\n\n```\nThrough the Express API\n  B lists their own contacts        \u2192 {\"contacts\":[]}          (A's row absent)\n  B reads  /api/contacts/1          \u2192 404\nDirectly against the Neon Data API, bypassing our backend\n  B: GET /contacts?id=eq.1          \u2192 []\n  B: GET /contacts?select=*         \u2192 []                       (full table scan)\nControl\n  A reads  /api/contacts/1          \u2192 200                      (owner still fine)\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#34",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > Two accounts cannot see each other's contacts (part 2)",
+  "kind": "raw",
+  "text": "The last two lines are the important ones. User B holds a valid token and is\ntalking straight to the database with no application code in the way \u2014 and\nPostgres returns an empty set. Note that Row Level Security **filters** rather\nthan refusing: B does not get \"403 forbidden\", B gets \"there is nothing here\",\nwhich is exactly right. It means ownership cannot leak even through a bug in the\nAPI, because the API is not what enforces it.\n\nAuthentication is required in production: ```\n$ curl https://<live-app>/api/contacts          # no token\n{\"error\":\"Not signed in.\", ...}                                        [401]\n```"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#35",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > The full journey, run in a real browser against the live site",
+  "kind": "raw",
+  "text": "Driven through the deployed URL, not localhost, and not with `curl` \u2014 `curl`\nhandles cookies differently from a browser, which is exactly how the original\nsign-in bug slipped through.\n\n| Step | Result |\n| --- | --- |\n| Create an account | signed in, empty drawer shown |\n| Submit a card with no name | `Name is required.` shown inline, nothing saved |\n| File a card | card appears with its priority tab |\n| Edit it \u2014 company, role, where met, notes, priority, last contacted | all fields saved and rendered |\n| Follow-up date | last contacted 14 Jun + quarterly \u2192 **\"Due in 2 days\"** (correct for 11 Sep) |\n| Hard refresh | still signed in, card still there |\n| Sign out | returned to the sign-in screen |\n| Sign back in | card loaded from Postgres |"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#36",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > Two accounts, re-verified in production after the auth change",
+  "kind": "raw",
+  "text": "User B, signed in in the same browser, attempting to reach User A's contact:\n\n```\nGET    /api/contacts/4   as User B  \u2192  404      (cannot read)\nPATCH  /api/contacts/4   as User B  \u2192  404      (cannot edit)\nDELETE /api/contacts/4   as User B  \u2192  404      (cannot delete)\nGET    /api/contacts     as User B  \u2192  0 rows   (sees nothing of A's)\n\nthen, signed back in as User A:\n  contact still present, name still \"Marcus Chen\" \u2014 the hijack changed nothing\n```\n\n404 rather than 403 is deliberate. RLS *filters* rows rather than refusing them,\nso to User B the row genuinely does not exist \u2014 and the response cannot be used\nto work out which contact IDs belong to somebody else."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#37",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Grading evidence > No secrets in the repository",
+  "kind": "raw",
+  "text": "```\n$ git log -p --all | grep -icE 'postgres://|postgresql://|BEGIN .*PRIVATE KEY'\n0\n```\n\n`.env.local` is gitignored and has never been committed. This project never uses\na Postgres connection string at all, so there is none to leak.\n\nScreenshots: _[optional: add screenshots of the drawer, the follow-up calendar, and sign-in]_\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#38",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Deployment",
+  "kind": "raw",
+  "text": "The whole project deploys as **one Vercel project**. The React app is built to\nstatic files and served from the CDN; the Express API runs as a serverless\nfunction at `/api`. `api/index.js` is the entire adapter \u2014 it imports the same\nExpress app used locally and hands it to Vercel.\n\n1. **Push to GitHub.**\n\n2. **Import the repository** at [vercel.com/new](https://vercel.com/new).\n   `vercel.json` supplies the build command and output directory, so the defaults\n   can be left alone.\n\n3. **Add the environment variables** in Vercel under\n   *Settings \u2192 Environment Variables*, for Production, Preview, and Development:\n   `NEON_AUTH_BASE_URL` and `NEON_DATA_API_URL`. That is the complete list \u2014\n   there are no public variables. Do not add `DATABASE_URL`; this project has no\n   use for one."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#39",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Deployment (part 2)",
+  "kind": "raw",
+  "text": "Worth knowing if you deploy from the CLI: environment variables belong to the\n   *project*, not to an individual deployment. A deployment whose variables were\n   supplied at deploy time will keep working, while the next `vercel --prod`\n   from a clean project fails with `FUNCTION_INVOCATION_FAILED` \u2014 every module\n   that reads `process.env` throws as it loads. Set them on the project first.\n\n4. **Tell Neon Auth to trust your domain.** In the Neon Console under\n   *Auth \u2192 Configuration \u2192 Domains*, add your deployed URL with the protocol and\n   no trailing slash, e.g. `https://your-app.vercel.app`. Add\n   `https://*.vercel.app` too if you want preview deployments to work.\n   Any `localhost` port is already trusted."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#40",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Deployment (part 3)",
+  "kind": "raw",
+  "text": "5. **Lock down the Data API's allowed origins.** In the Neon Console under\n   *Data API \u2192 Settings \u2192 CORS allowed origins*, list your domain explicitly.\n   **Left empty, this setting allows every origin** \u2014 the default is permissive,\n   not restrictive.\n\n6. **Verify on the live URL** in a private browser window: sign up, add a\n   contact, refresh, edit, delete, sign out. Then repeat the two-account test.\n\n---"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#41",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Known limitations",
+  "kind": "raw",
+  "text": "Honest about what this does not do:"
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#42",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Known limitations (part 2)",
+  "kind": "raw",
+  "text": "- **No password reset.** Neon Auth supports it; the interface is not built. A\n  locked-out user currently needs a new account.\n- **No email verification.** Anyone can sign up with any address. Fine for a\n  private tracker, not for anything that emails people.\n- **Deleting is permanent.** There is a confirmation prompt but no undo and no\n  soft-delete, so a deleted card is genuinely gone.\n- **Everything loads at once.** With a few thousand contacts the initial load\n  would get slow. Real pagination would be the first fix.\n- **Search and priority sorting happen in the browser**, over the contacts\n  already loaded. At a larger scale both belong in the database query.\n- **Cadence uses fixed day counts** \u2014 monthly is 30 days, quarterly 91, annually\n  365 \u2014 rather than true calendar months. Simpler and more predictable, but\n  \"the first Monday of each month\" is not expressible.\n- **Neon Managed Better Auth and the Data API are both in Beta.** Their APIs may\n  change.\n- **Auth runs through a hand-written proxy rather than the Neon browser SDK.**\n  The SDK's published config gives no way to set `credentials` on its requests,\n  which is what made sign-in fail in browsers that block third-party cookies.\n  The proxy is about sixty lines and forwards requests unchanged, but it is code\n  this project now owns, and it would need revisiting if Neon changes its cookie\n  or origin handling.\n- **Sessions last as long as Neon's cookie.** There is no \"remember me\" toggle\n  and no visible session expiry, so a long-idle tab discovers it is signed out\n  only on the next action \u2014 at which point it returns to the sign-in screen\n  rather than showing an error.\n- **Forwarding a user's token from a backend to the Data API is architecturally\n  sound but not something Neon documents explicitly.** Their guidance frames the\n  Data API as browser-facing. The behaviour follows directly from its\n  bearer-token model, and the two-account test verifies it end to end."
+ },
+ {
+  "id": "raw/networking-tracker-readme.md#43",
+  "path": "raw/networking-tracker-readme.md",
+  "section": "Card Catalog \u2014 a secure networking tracker > Known limitations > What I would build next",
+  "kind": "raw",
+  "text": "1. **Pagination and server-side search**, the two things that break first at scale.\n2. **An interaction log** \u2014 one row per conversation instead of a single\n   `last_contacted_on`, so you keep the history rather than overwriting it.\n3. **Calendar export**, so follow-ups appear in Google Calendar.\n4. **Undo for deletes**, using a `deleted_at` column and a policy that hides\n   soft-deleted rows.\n5. **A mobile app.** The API is already separate and has no dependency on the web\n   frontend, so this needs no backend changes."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#0",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > Overview & Instructions",
+  "kind": "raw",
+  "text": "This repository contains a Deep Q-Network (DQN) agent trained to play Ms. Pac-Man. The agent learns entirely through trial and error by observing the game pixels and receiving in-game score rewards. The notebook is based on [pepealonso95/pacman-dqn](https://github.com/pepealonso95/pacman-dqn).\n\n**How to open and run the notebook:**\n1. Open [`Amelia_Roeschel_pacman_dqn.ipynb`](Amelia_Roeschel_pacman_dqn.ipynb) in Google Colab, Jupyter, or VS Code (Python 3.11\u20133.13 kernel).\n2. If using Colab, select a GPU runtime (**Runtime \u2192 Change runtime type \u2192 T4 GPU**).\n3. The hyperparameters are pre-set in Section 1. Select **Run All** to execute the notebook from top to bottom. Setup, baseline evaluation, training, final evaluation, and the results ZIP download run automatically."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#1",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > Overview & Instructions (part 2)",
+  "kind": "raw",
+  "text": "The notebook is saved with all outputs from the submitted run, so the scores, plots, and gameplay can be inspected without rerunning it. Only the three settings in Section 1 were changed across my experiments; every other setting is the notebook default, recorded in [config.json](results/config.json).\n\n---"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#2",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \u2699\ufe0f Hyperparameters",
+  "kind": "raw",
+  "text": "* **Exploration Rate:** `0.09` - I lowered exploration across my runs, from 0.25 to 0.10 and finally to 0.09. In Ms. Pac-Man a random turn often walks straight into a ghost, so a high random rate ends games early and the agent rarely sees the later part of a maze. The agent is also evaluated at 5% exploration, so training nearer that value practices the behavior being graded. I kept it above 5% so the agent still had some pressure to try alternatives, since exploration is fixed for the whole run rather than decaying.\n* **Episodes:** `1000` - My previous run's training scores were still trending upward when it ended at 250 episodes, which suggested the agent had not finished learning. Quadrupling the budget produced 148,477 learning updates instead of 37,419, and still finished in under 40 minutes on a Colab T4.\n* **Learning Rate:** `0.0001` - An earlier run at 0.0002 showed loss climbing while training scores fell, which suggested each update was too large for a replay memory holding only 5,000 decisions. At 0.0001 learning became steadier, so I held it fixed for my last two runs."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#3",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \u2699\ufe0f Hyperparameters (part 2)",
+  "kind": "raw",
+  "text": "Note that this run changed **two** settings from my previous one (exploration 0.10 \u2192 0.09 and episodes 250 \u2192 1000), so the improvement below cannot be attributed to the episode budget alone.\n\n---"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#4",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83e\udde0 How the Agent Works",
+  "kind": "raw",
+  "text": "* **Observations:** The agent \"sees\" the game as a stack of **four consecutive 84\u00d784 grayscale game screens**. Stacking four frames lets the network perceive movement and direction (like which way the ghosts are moving).\n* **Actions:** The agent chooses one of **9 joystick moves**: NOOP (no move), UP, RIGHT, LEFT, DOWN, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT. Each decision is held for four game frames.\n* **Rewards:** The reward is the **game points** it earns (eating dots, fruit, or vulnerable ghosts). During learning each reward is clipped to between \u22121 and +1, so a 10-point dot and a 200-point ghost look equally good to the network; every score reported below is the real game score.\n\n---"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#5",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Score Comparison",
+  "kind": "raw",
+  "text": "Evaluation used the notebook's fixed settings before and after training: the same five seeds, 5% exploration, and a 3,000-decision time limit. The baseline is the untrained network, not a random-action agent. Full data: [comparison.json](results/comparison.json).\n\n| Evaluation Game | Baseline (Untrained) Score | Trained Score |\n| :--- | :--- | :--- |\n| **Seed 101** | 350 | 970 |\n| **Seed 202** | 500 | 560 |\n| **Seed 303** | 320 | 810 |\n| **Seed 404** | 800 | 2150 |\n| **Seed 505** | 490 | 870 |\n| **MEAN SCORE** | **492.0** | **1072.0** |\n\n**Change in mean score: +580.0 (+118%).** All five games improved, which none of my earlier runs achieved. No game hit the time limit, before or after: every game ended at game over."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#6",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Score Comparison (part 2)",
+  "kind": "raw",
+  "text": "One caveat on the mean: seed 404's 2,150 is a single unusually good game that lifts the average. Excluding it, the remaining four games still average 802.5 against a 490 baseline for the same seeds, so the improvement does not depend on that one result.\n\n**Expectations vs. Observations:**\nI expected that less randomness would lead to better results, because more of the agent's moves would be based on the logic it had learned instead of chance. I also expected more iterations to lead to higher scores, since the agent keeps getting trained over time."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#7",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Score Comparison (part 3)",
+  "kind": "raw",
+  "text": "Both expectations held, but not evenly. The trained mean roughly doubled the baseline, and the agent scores noticeably faster: in the best game it collects 500 points within the first 20 seconds, against 230 in my 250-episode run and 210 in my 100-episode run. Survival time barely moved, about 683 decisions per evaluation game versus 696 before, so the gain came from scoring more efficiently in the time it had, not from living longer.\n\nThe second expectation held only for the first half of training. The 25-game average climbed from roughly 480 to a 750\u2013900 band by about episode 400, then oscillated inside that band for the remaining 600 games without a clear upward trend. More games kept helping until they didn't."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#8",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Score Comparison (part 4)",
+  "kind": "raw",
+  "text": "**Loss behaved differently this time.** Mean update loss rose to about 0.12 by episode 200 and then flattened, instead of climbing throughout as it did in my 250-episode run. Rising loss is not automatically bad here: it measures the gap between predicted and target values, and that gap grows as the agent starts finding bigger rewards. A loss curve that levels off while scores hold up is what a settling agent looks like."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#9",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Experiment Log",
+  "kind": "raw",
+  "text": "All four runs used identical evaluation settings, so their trained means are directly comparable. The baseline is the same every time because the starting weights come from a fixed seed.\n\n| Run | Exploration | Episodes | Learning rate | Learning updates | Baseline mean | Trained mean |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| 1 (setup check) | 0.25 | 5 | 0.0002 | 539 | 492.0 | 730.0 |\n| 2 | 0.25 | 100 | 0.0002 | 14,706 | 492.0 | 534.0 |\n| 3 | 0.10 | 250 | 0.0001 | 37,419 | 492.0 | 664.0 |\n| **4 (submitted)** | **0.09** | **1000** | **0.0001** | **148,477** | **492.0** | **1072.0** |"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#10",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcca Evaluation & Scores > Experiment Log (part 2)",
+  "kind": "raw",
+  "text": "Run 1 was a five-episode setup check with only 539 learning updates, so its 730 reflects luck across five games rather than learning \u2014 a useful reminder of how noisy a five-game evaluation is. Run 2 trained 20\u00d7 longer and scored worse, which is what prompted lowering both exploration and the learning rate. Runs 3 and 4 then improved steadily.\n\n---"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#11",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcc8 Training Statistics & Hardware",
+  "kind": "raw",
+  "text": "* **Run status:** Completed (not interrupted). Run ID `20260915_231634_675837`.\n* **Hardware Used:** NVIDIA T4 GPU (CUDA) via Google Colab. Exact Python and package versions are recorded in [config.json](results/config.json).\n* **Completed Episodes:** 1,000 of 1,000\n* **Total Decisions (Steps):** 594,907\n* **Total Learning Updates:** 148,477\n* **Elapsed Training Time:** 2,265 seconds (37.8 minutes, including the periodic gameplay samples)\n* **Best single training game:** 4,020 points\n\nSource: [training_summary.json](results/training_summary.json)\n\n---"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#12",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udd2c Limitations & Next Steps",
+  "kind": "raw",
+  "text": "* **Observed Limitation:** Learning plateaued. After roughly episode 400 the 25-game average stopped trending upward, even though training continued for 600 more games, and the agent stayed inconsistent: its progress samples swing between 250 and 1,930 points on the same seed, and seed 202 scored 560 here against 850 in my shorter run. The likely cause is memory rather than practice. The agent remembers only its last 5,000 decisions, about eight games, so late in training it is still learning from a narrow slice of recent experience and cannot revisit the rare good games that would teach it the most. Watching the clips, it clears dots efficiently near where it starts but shows no sign of a plan for finishing a maze or for using power pellets to hunt ghosts.\n* **Next Experiment:** I would change only the **replay memory size**, from `5,000` to `50,000` decisions, keeping exploration at 0.09, episodes at 1,000, and the learning rate at 0.0001. The assignment allows tuning settings beyond the three main dials as long as the change is explained, and the plateau above points at memory as the binding constraint rather than the amount of play. A ten-times-larger memory would let the agent keep learning from roughly 80 past games instead of 8. I would expect the 25-game average to keep climbing past episode 400 instead of flattening, and I would watch whether the evaluation scores become less erratic across the five seeds."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#13",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udd2c Limitations & Next Steps (part 2)",
+  "kind": "raw",
+  "text": "---\n\n\ud83d\udcc1 Visual Evidence & Artifacts: GIFs show the first 20 seconds of a game at 4\u00d7 speed.\n\nUntrained Baseline Gameplay: First evaluation game (seed 101), before any training:\n\n![Untrained Agent](results/untrained.gif)\n\nBest Trained Gameplay: Highest-scoring of the five final evaluation games (seed 404, 2,150 points):\n\n![Best Trained Agent](results/best_trained.gif)"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#14",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcc1 Visual Evidence & Artifacts > Intermediate Gameplay",
+  "kind": "raw",
+  "text": "This run saved a sample every 25 episodes, 40 in total. All of them are in the [results folder](results); shown below is every 100th episode. Each plays seed 101 with the network as it stood at that episode. These are single games, so their scores are noisy \u2014 the evaluation table above is the evidence."
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#15",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcc1 Visual Evidence & Artifacts > Intermediate Gameplay (part 2)",
+  "kind": "raw",
+  "text": "| After 100 (720) | After 200 (600) | After 300 (430) | After 400 (410) | After 500 (500) |\n| :---: | :---: | :---: | :---: | :---: |\n| ![100](results/episode_0100.gif) | ![200](results/episode_0200.gif) | ![300](results/episode_0300.gif) | ![400](results/episode_0400.gif) | ![500](results/episode_0500.gif) |\n| **After 600 (1350)** | **After 700 (920)** | **After 800 (520)** | **After 900 (720)** | **After 1000 (970)** |\n| ![600](results/episode_0600.gif) | ![700](results/episode_0700.gif) | ![800](results/episode_0800.gif) | ![900](results/episode_0900.gif) | ![1000](results/episode_1000.gif) |\n\nTraining Dashboard: Raw score per game with a 25-game average, mean update loss, and exploration:\n\n![Training Dashboard](results/training_dashboard.png)"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#16",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcc1 Visual Evidence & Artifacts > Raw Data Links",
+  "kind": "raw",
+  "text": "* [Executed Notebook (Amelia_Roeschel_pacman_dqn.ipynb)](Amelia_Roeschel_pacman_dqn.ipynb)\n* [comparison.json](results/comparison.json)\n* [config.json](results/config.json)\n* [training.csv](results/training.csv)\n* [training_summary.json](results/training_summary.json)"
+ },
+ {
+  "id": "raw/pacman-dqn-readme.md#17",
+  "path": "raw/pacman-dqn-readme.md",
+  "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcc1 Visual Evidence & Artifacts > Model Checkpoints",
+  "kind": "raw",
+  "text": "Model checkpoints (`untrained.pt`, 40 periodic checkpoints, and `trained.pt`, about 6 MB each) are kept out of this repository to keep it small. They are saved in the full results ZIP for run `20260915_231634_675837`, which I keep locally."
+ },
+ {
+  "id": "wiki/Career/Career History.md#0",
+  "path": "wiki/Career/Career History.md",
+  "section": "Career History",
+  "kind": "wiki",
+  "text": "Amelia taught special education in Chicago for about three and a half years, then spent three roles in ed-tech startups in customer success and implementation. In 2024 she applied to business school. She is now at Berkeley Haas, graduating in May 2027, and returning full time to Workday in finance and strategy."
+ },
+ {
+  "id": "wiki/Career/Career History.md#1",
+  "path": "wiki/Career/Career History.md",
+  "section": "Career History > Education",
+  "kind": "wiki",
+  "text": "- **Vanderbilt University**, graduated 2018: Human and Organizational Development, minor in English literature.\n- The English minor was earned at **Oxford University** during a semester abroad in 2017.\n- **Berkeley Haas MBA**, scheduled to graduate **May 2027**."
+ },
+ {
+  "id": "wiki/Career/Career History.md#2",
+  "path": "wiki/Career/Career History.md",
+  "section": "Career History > Teaching (June 2018 \u2013 November 2021)",
+  "kind": "wiki",
+  "text": "- **Teach For America**: K\u20135 special education teacher in Chicago.\n- About two years in **Chicago Public Schools**, teaching a lot of social-emotional education in Englewood, a primarily Black, low-income neighborhood facing poverty, gun violence and addiction.\n- About two years at **Acero Marquez**, a charter school in the Acero network in the Back of the Yards neighborhood, which is mostly first-generation Mexican immigrant families.\n- Taught through COVID: remote learning, then the return to in-person."
+ },
+ {
+  "id": "wiki/Career/Career History.md#3",
+  "path": "wiki/Career/Career History.md",
+  "section": "Career History > Ed-tech startups",
+  "kind": "wiki",
+  "text": "- **ClassClick**, Implementation Specialist (Nov 2021 \u2013 about Nov 2022): a company of about 30 people. She learned customer success, implementation, startups and product, and how teams fit together to build a product for schools.\n- **Paper Education**, virtual tutoring (Nov 2022 \u2013 Aug 2023): about 600 employees and once valued at about $1 billion. Her role was eliminated because of external factors: the post-COVID ed-tech downturn, as schools lost funding and became stricter about purchases. Paper laid off about 33% of the company that year.\n- **Beable**, Customer Success Manager, Strategic Accounts (from Jan 2024): founded by Saki Dodelson, who previously sold an ed-tech company for about $600 million. The role didn't challenge her in the ways she hoped, and she wanted a role outside education."
+ },
+ {
+  "id": "wiki/Career/Career History.md#4",
+  "path": "wiki/Career/Career History.md",
+  "section": "Career History > Business school",
+  "kind": "wiki",
+  "text": "- In 2024 she applied only to California schools: Stanford, Berkeley Haas and UCLA Anderson.\n- She was admitted to Haas and Anderson, each with a $60,000 scholarship.\n- She almost chose Anderson (she was living in San Diego and loved Southern California, and got married in LA around then). She chose Haas after visiting, inspired by the people, the Bay Area and its closeness to Silicon Valley."
+ },
+ {
+  "id": "wiki/Career/Career History.md#5",
+  "path": "wiki/Career/Career History.md",
+  "section": "Career History > Workday",
+  "kind": "wiki",
+  "text": "- **Summer 2026:** MBA intern on Workday's business finance team, working with the Global Partner Organization and specifically the **Marketplace** team, a new venture within Workday.\n- Did financial modeling and projections for Marketplace and for **monetizing AI agents** in the platform, plus other strategy projects.\n- Returning to Workday full time in summer or fall 2027, after graduation, to build a career in corporate tech, finance and strategy."
+ },
+ {
+  "id": "wiki/Concepts/AI Agents.md#0",
+  "path": "wiki/Concepts/AI Agents.md",
+  "section": "AI Agents",
+  "kind": "wiki",
+  "text": "Software that uses a large language model to plan and take actions, such as calling tools or completing multi-step tasks, rather than only generating text."
+ },
+ {
+  "id": "wiki/Concepts/AI Agents.md#1",
+  "path": "wiki/Concepts/AI Agents.md",
+  "section": "AI Agents > Appears in",
+  "kind": "wiki",
+  "text": "- [[Career History]]: at Workday, Amelia modeled how to monetize AI agents within the platform.\n- [[Haas Course Schedule]]: the subject of Fundamentals of Agentic AI, the class this wiki is built for."
+ },
+ {
+  "id": "wiki/Concepts/Corpus.md#0",
+  "path": "wiki/Concepts/Corpus.md",
+  "section": "Corpus",
+  "kind": "wiki",
+  "text": "The collection of text used to train a language model. A small model can only use words that appear in its corpus.\n\nAppears in: - [[Custom nanoGPT LLM]] \u2014 the only variable changed between experiments; three food files grew vocabulary from 136 to 324 words."
+ },
+ {
+  "id": "wiki/Concepts/Customer Success.md#0",
+  "path": "wiki/Concepts/Customer Success.md",
+  "section": "Customer Success",
+  "kind": "wiki",
+  "text": "The team and practice responsible for onboarding customers, driving adoption, and keeping accounts healthy after they buy. It sits between sales, product and support.\n\nAppears in: - [[Career History]]: implementation at ClassClick, then customer success for strategic accounts at Beable."
+ },
+ {
+  "id": "wiki/Concepts/EdTech Industry.md#0",
+  "path": "wiki/Concepts/EdTech Industry.md",
+  "section": "EdTech Industry",
+  "kind": "wiki",
+  "text": "Companies that sell software and services to schools, teachers and students. Demand surged during COVID remote learning, then fell as school funding tightened.\n\nAppears in: - [[Career History]]: ClassClick, Paper Education and Beable. The post-COVID downturn led to Paper's roughly 33% layoff in 2023."
+ },
+ {
+  "id": "wiki/Concepts/Evaluation Suite.md#0",
+  "path": "wiki/Concepts/Evaluation Suite.md",
+  "section": "Evaluation Suite",
+  "kind": "wiki",
+  "text": "A fixed set of test cases, scored the same way every time, used to compare a model before and after training or across experiments."
+ },
+ {
+  "id": "wiki/Concepts/Evaluation Suite.md#1",
+  "path": "wiki/Concepts/Evaluation Suite.md",
+  "section": "Evaluation Suite > Appears in",
+  "kind": "wiki",
+  "text": "- [[Custom nanoGPT LLM]] \u2014 a 48-case next-word exam with coverage, scorable accuracy and all-case success.\n- [[Ms Pac-Man DQN Agent]] \u2014 the same five seeds at 5% exploration, before and after training."
+ },
+ {
+  "id": "wiki/Concepts/Exploration Rate.md#0",
+  "path": "wiki/Concepts/Exploration Rate.md",
+  "section": "Exploration Rate",
+  "kind": "wiki",
+  "text": "In reinforcement learning, the fraction of moves the agent picks at random to try new things, instead of the move it currently thinks is best.\n\nAppears in: - [[Ms Pac-Man DQN Agent]] \u2014 lowered 0.25 \u2192 0.10 \u2192 0.09, because random turns in Ms. Pac-Man often walk into ghosts."
+ },
+ {
+  "id": "wiki/Concepts/Financial Modeling.md#0",
+  "path": "wiki/Concepts/Financial Modeling.md",
+  "section": "Financial Modeling",
+  "kind": "wiki",
+  "text": "Building quantitative models, usually in spreadsheets, that project revenue, costs and returns so a business can make decisions about new products or investments."
+ },
+ {
+  "id": "wiki/Concepts/Financial Modeling.md#1",
+  "path": "wiki/Concepts/Financial Modeling.md",
+  "section": "Financial Modeling > Appears in",
+  "kind": "wiki",
+  "text": "- [[Career History]]: projections for Workday's Marketplace venture and for AI-agent monetization.\n- [[Haas Course Schedule]]: Corporate Financial Accounting covers reading and evaluating the financial reports that models build on."
+ },
+ {
+  "id": "wiki/Concepts/Large Language Model.md#0",
+  "path": "wiki/Concepts/Large Language Model.md",
+  "section": "Large Language Model",
+  "kind": "wiki",
+  "text": "A neural network trained on large amounts of text to predict the next word (token). Chat assistants, and the local Gemma model behind this wiki, are large language models."
+ },
+ {
+  "id": "wiki/Concepts/Large Language Model.md#1",
+  "path": "wiki/Concepts/Large Language Model.md",
+  "section": "Large Language Model > Appears in",
+  "kind": "wiki",
+  "text": "- [[Custom nanoGPT LLM]] \u2014 a tiny language model trained from scratch; it learned vocabulary and grammar but not reasoning.\n- [[Haas Course Schedule]] \u2014 the core subject of Fundamentals of Agentic AI."
+ },
+ {
+  "id": "wiki/Concepts/Learning Rate.md#0",
+  "path": "wiki/Concepts/Learning Rate.md",
+  "section": "Learning Rate",
+  "kind": "wiki",
+  "text": "The size of each weight update during training. Too large and training overshoots and loss climbs or diverges; too small and the model barely learns within the training budget.\n\nAppears in: - [[Custom nanoGPT LLM]] \u2014 held at 0.001 for both experiments, with warmup and cosine decay.\n- [[Ms Pac-Man DQN Agent]] \u2014 lowered from 0.0002 to 0.0001 after loss climbed while scores fell."
+ },
+ {
+  "id": "wiki/Concepts/Loss.md#0",
+  "path": "wiki/Concepts/Loss.md",
+  "section": "Loss",
+  "kind": "wiki",
+  "text": "How far the model's predictions are from the targets. Falling loss means the model fits its training data better \u2014 but it is not the same as doing well on an evaluation."
+ },
+ {
+  "id": "wiki/Concepts/Loss.md#1",
+  "path": "wiki/Concepts/Loss.md",
+  "section": "Loss > Appears in",
+  "kind": "wiki",
+  "text": "- [[Custom nanoGPT LLM]] \u2014 plateaued around step 1,200; not comparable across different vocabularies.\n- [[Ms Pac-Man DQN Agent]] \u2014 rose to about 0.12 then flattened; rising loss can mean the agent is finding bigger rewards."
+ },
+ {
+  "id": "wiki/Concepts/Replay Memory.md#0",
+  "path": "wiki/Concepts/Replay Memory.md",
+  "section": "Replay Memory",
+  "kind": "wiki",
+  "text": "A DQN agent stores its recent decisions and outcomes and trains on random samples from them. Its size limits how far back the agent can learn from.\n\nAppears in: - [[Ms Pac-Man DQN Agent]] \u2014 held only 5,000 decisions (about eight games); the proposed next experiment raises it to 50,000."
+ },
+ {
+  "id": "wiki/Concepts/Row Level Security.md#0",
+  "path": "wiki/Concepts/Row Level Security.md",
+  "section": "Row Level Security",
+  "kind": "wiki",
+  "text": "A Postgres feature that attaches a policy to a table, so every query only sees or changes rows the signed-in user is allowed to \u2014 even if the application code has a bug.\n\nAppears in: - [[Card Catalog Networking Tracker]] \u2014 one policy per operation on the contacts table; ownership is stamped by the database."
+ },
+ {
+  "id": "wiki/Concepts/Token Authentication.md#0",
+  "path": "wiki/Concepts/Token Authentication.md",
+  "section": "Token Authentication",
+  "kind": "wiki",
+  "text": "After sign-in, the user receives a signed, short-lived token. Any service that knows the issuer's public key can verify it without trusting the browser.\n\nAppears in: - [[Card Catalog Networking Tracker]] \u2014 Neon Managed Better Auth tokens expire after about 15 minutes and are forwarded from the API to Postgres."
+ },
+ {
+  "id": "wiki/Courses/Haas Course Schedule.md#0",
+  "path": "wiki/Courses/Haas Course Schedule.md",
+  "section": "Haas Course Schedule",
+  "kind": "wiki",
+  "text": "Amelia is taking five courses at Berkeley Haas. They range from economics and accounting to hands-on AI building and interpersonal skills. Source: a dictated note, so wording in the original is conversational.\n\nStrategy, Structure, and Incentives: - **Instructor:** Greg LeBlanc\n- **Meets:** Tuesdays and Thursdays, 11:00 a.m.\u201312:30 p.m., room N570\n- **Covers:** economics, markets and firms, organizational design."
+ },
+ {
+  "id": "wiki/Courses/Haas Course Schedule.md#1",
+  "path": "wiki/Courses/Haas Course Schedule.md",
+  "section": "Haas Course Schedule > Fundamentals of Agentic AI",
+  "kind": "wiki",
+  "text": "- **Instructor:** Pepe Alonso\n- **Meets:** Tuesdays, 4\u20136 p.m., room N570\n- **Covers:** large language models, from their historical context to the present day and what you can do with them, with a lot of hands-on building.\n- This personal wiki project is being built for this class."
+ },
+ {
+  "id": "wiki/Courses/Haas Course Schedule.md#2",
+  "path": "wiki/Courses/Haas Course Schedule.md",
+  "section": "Haas Course Schedule > Conflict Lab",
+  "kind": "wiki",
+  "text": "- **Instructor:** Francesca LeBaron\n- **Meets:** Thursdays, 2\u20135 p.m., room N500\n- **Covers:** hands-on practice of difficult conversations at work, with elements borrowed from couples therapy. Recent topics: somatics, giving a good apology, giving feedback, and intent versus impact."
+ },
+ {
+  "id": "wiki/Courses/Haas Course Schedule.md#3",
+  "path": "wiki/Courses/Haas Course Schedule.md",
+  "section": "Haas Course Schedule > Corporate Financial Accounting",
+  "kind": "wiki",
+  "text": "- **Instructor:** Tanya Paul\n- **Meets:** Thursdays, 8\u201311 a.m., room N170\n- **Covers:** reading a 10-K and evaluating financial reports from an investor's perspective, including revenue recognition and how reporting choices can make a firm look more or less favorable."
+ },
+ {
+  "id": "wiki/Courses/Haas Course Schedule.md#4",
+  "path": "wiki/Courses/Haas Course Schedule.md",
+  "section": "Haas Course Schedule > Power and Politics",
+  "kind": "wiki",
+  "text": "- **Instructor:** Cameron Anderson\n- **Meets:** Mondays and Wednesdays, 2\u20134 p.m., room N170\n- **Covers:** influence at work \u2014 using relationships and networks to build credibility, advocacy and influence, and relating behaviors such as trustworthiness, personability and openness."
+ },
+ {
+  "id": "wiki/Projects/Card Catalog Networking Tracker.md#0",
+  "path": "wiki/Projects/Card Catalog Networking Tracker.md",
+  "section": "Card Catalog Networking Tracker",
+  "kind": "wiki",
+  "text": "Assignment 1: \"Card Catalog\", a private tracker for the people Amelia wants to stay connected with at Berkeley. Each contact is an index card with a follow-up cadence, and the app lists who is overdue each week. Ownership of every card is enforced by Postgres Row Level Security, not by app code."
+ },
+ {
+  "id": "wiki/Projects/Card Catalog Networking Tracker.md#1",
+  "path": "wiki/Projects/Card Catalog Networking Tracker.md",
+  "section": "Card Catalog Networking Tracker > Key details",
+  "kind": "wiki",
+  "text": "- Contacts store name, company, role, where you met, notes and priority; priority is limited to high/medium/low by the database (\u00a7 Features).\n- A \"Reach out this week\" list and month calendar are driven by each contact's cadence: monthly, quarterly, annually or custom (\u00a7 Features).\n- Stack: React 18 + Vite frontend, Node + Express 5 API, Neon Postgres, Neon Managed Better Auth, hosted on Vercel (\u00a7 Technology stack).\n- The browser only talks to the Express API, giving a trusted place to validate and a reusable API (\u00a7 Why the frontend and backend are separate).\n- Sign-in issues a signed token that expires after about 15 minutes; the API verifies it and forwards it so Postgres can check it too (\u00a7 Authentication and ownership).\n- Row Level Security has a separate policy per operation, and `user_id` is stamped by the database, never sent by the browser (\u00a7 Database schema, \u00a7 The ownership rule).\n- Validation happens three times: in the browser, the API, and the database (\u00a7 Validation happens three times)."
+ },
+ {
+  "id": "wiki/Projects/Custom nanoGPT LLM.md#0",
+  "path": "wiki/Projects/Custom nanoGPT LLM.md",
+  "section": "Custom nanoGPT LLM",
+  "kind": "wiki",
+  "text": "Assignment 3: two small experiments training a tiny word-level nanoGPT from scratch, changing only the corpus. Training clearly worked, and adding three food/restaurant files raised eval coverage, but the targeted reasoning categories stayed at zero \u2014 **vocabulary \u2260 reasoning**."
+ },
+ {
+  "id": "wiki/Projects/Custom nanoGPT LLM.md#1",
+  "path": "wiki/Projects/Custom nanoGPT LLM.md",
+  "section": "Custom nanoGPT LLM > Key details",
+  "kind": "wiki",
+  "text": "- Model: 2 blocks, 4 heads, 64-dim embeddings, 48-token context; trained on CPU with AdamW (top of source).\n- Both experiments: 3,000 training steps, learning rate 0.001 (\u00a7 2. My three choices).\n- Experiment 1 used the starter classroom sentences; Experiment 2 added three food files \u2014 163 passages \u2014 growing vocabulary **136 \u2192 324 words** (\u00a7 Corpus details).\n- Exp 1 trained: all-case success 20/48 (41.7%), scorable accuracy 83.3%, coverage 50% (\u00a7 7. Evaluations).\n- Exp 2: all-case success 50%, coverage 58%; the gain came mostly from new_wording (4/8 \u2192 8/8), while negation, opposites and sequence stayed at 0 (\u00a7 3, \u00a7 8).\n- Exp 2 has more parameters (123,904 vs 111,872) only because of the larger vocabulary (\u00a7 4. Run facts).\n- Eval prompts and answers were kept out of the training corpus (\u00a7 Leakage / separation checks).\n- **Next experiment:** hold the corpus fixed and scale model depth (2 \u2192 4 blocks) and/or 10\u00d7 the targeted teaching data (\u00a7 10)."
+ },
+ {
+  "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#0",
+  "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+  "section": "Ms Pac-Man DQN Agent",
+  "kind": "wiki",
+  "text": "Assignment 2: a Deep Q-Network (DQN) agent that learns Ms. Pac-Man by trial and error from game pixels and score rewards. After tuning three hyperparameters over four runs, the trained agent's mean evaluation score rose from **492 to 1,072 (+118%)**, improving on all five evaluation seeds."
+ },
+ {
+  "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#1",
+  "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+  "section": "Ms Pac-Man DQN Agent > Key details",
+  "kind": "wiki",
+  "text": "- **Final settings:** exploration rate 0.09, 1,000 episodes, learning rate 0.0001 (\u00a7 Hyperparameters).\n- Exploration was lowered 0.25 \u2192 0.10 \u2192 0.09 because random turns walk into ghosts; evaluation runs at 5% exploration (\u00a7 Hyperparameters).\n- An earlier learning rate of 0.0002 showed loss climbing while scores fell; 0.0001 was steadier (\u00a7 Hyperparameters).\n- The agent sees a stack of four 84\u00d784 grayscale frames and chooses one of 9 joystick moves; rewards are clipped to \u22121\u2026+1 during learning (\u00a7 How the Agent Works).\n- Evaluation: same five seeds, 5% exploration, 3,000-decision limit, before and after training (\u00a7 Score Comparison).\n- Trained on an NVIDIA T4 GPU in Google Colab: 594,907 decisions, 148,477 learning updates, 37.8 minutes (\u00a7 Training Statistics & Hardware).\n- **Limitation:** learning plateaued after about episode 400; the likely cause is a replay memory of only 5,000 decisions (\u00a7 Limitations & Next Steps).\n- **Next experiment:** raise replay memory from 5,000 to 50,000, holding the other settings fixed (\u00a7 Limitations & Next Steps)."
+ }
+]

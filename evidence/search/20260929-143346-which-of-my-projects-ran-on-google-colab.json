@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-09-29T14:33:46",
+  "model": "mlx-community/gemma-4-e2b-it-4bit",
+  "execution": "local",
+  "question": "Which of my projects ran on Google Colab, and what hardware did each use?",
+  "passages": [
+    {
+      "id": "raw/pacman-dqn-readme.md#11",
+      "path": "raw/pacman-dqn-readme.md",
+      "section": "Training a Ms. Pac-Man Agent (Deep Q-Network) > \ud83d\udcc8 Training Statistics & Hardware",
+      "kind": "raw",
+      "text": "* **Run status:** Completed (not interrupted). Run ID `20260915_231634_675837`.\n* **Hardware Used:** NVIDIA T4 GPU (CUDA) via Google Colab. Exact Python and package versions are recorded in [config.json](results/config.json).\n* **Completed Episodes:** 1,000 of 1,000\n* **Total Decisions (Steps):** 594,907\n* **Total Learning Updates:** 148,477\n* **Elapsed Training Time:** 2,265 seconds (37.8 minutes, including the periodic gameplay samples)\n* **Best single training game:** 4,020 points\n\nSource: [training_summary.json](results/training_summary.json)\n\n---",
+      "score": 10.57
+    },
+    {
+      "id": "raw/custom-llm-readme.md#2",
+      "path": "raw/custom-llm-readme.md",
+      "section": "Building a Custom LLM \u2014 Class 4 Assignment > 1. Overview & how to run (part 2)",
+      "kind": "raw",
+      "text": "**To run it yourself:** open either notebook in Google Colab (default free CPU is enough) or locally with `pip install -r requirements.txt` and Jupyter. Set the three choices in **Section 1**, then **Runtime \u2192 Run all**. For Experiment 2, upload the three `corpus/*.txt` files into Colab's `corpus/` folder *before* Run all (keep `CORPUS = \"classroom\"` so they're **added** to the classroom sentences).\n\n---",
+      "score": 7.94
+    },
+    {
+      "id": "raw/custom-llm-readme.md#8",
+      "path": "raw/custom-llm-readme.md",
+      "section": "Building a Custom LLM \u2014 Class 4 Assignment > 4. Run facts",
+      "kind": "raw",
+      "text": "| | Exp 1 | Exp 2 |\n|---|---|---|\n| Completed steps | 3,000 (not interrupted) | 3,000 (not interrupted) |\n| Elapsed time | 38.9 s | 52.3 s |\n| Hardware | Colab CPU (Linux x86_64, PyTorch 2.11 CPU) | same |\n| Parameters | 111,872 | 123,904 |\n| Vocabulary | 136 | 324 |\n\n*(Exp 2 has more parameters only because a larger vocabulary means a larger embedding table \u2014 the network architecture is identical.)*\n\n---",
+      "score": 7.03
+    },
+    {
+      "id": "wiki/Projects/Ms Pac-Man DQN Agent.md#1",
+      "path": "wiki/Projects/Ms Pac-Man DQN Agent.md",
+      "section": "Ms Pac-Man DQN Agent > Key details",
+      "kind": "wiki",
+      "text": "- **Final settings:** exploration rate 0.09, 1,000 episodes, learning rate 0.0001 (\u00a7 Hyperparameters).\n- Exploration was lowered 0.25 \u2192 0.10 \u2192 0.09 because random turns walk into ghosts; evaluation runs at 5% exploration (\u00a7 Hyperparameters).\n- An earlier learning rate of 0.0002 showed loss climbing while scores fell; 0.0001 was steadier (\u00a7 Hyperparameters).\n- The agent sees a stack of four 84\u00d784 grayscale frames and chooses one of 9 joystick moves; rewards are clipped to \u22121\u2026+1 during learning (\u00a7 How the Agent Works).\n- Evaluation: same five seeds, 5% exploration, 3,000-decision limit, before and after training (\u00a7 Score Comparison).\n- Trained on an NVIDIA T4 GPU in Google Colab: 594,907 decisions, 148,477 learning updates, 37.8 minutes (\u00a7 Training Statistics & Hardware).\n- **Limitation:** learning plateaued after about episode 400; the likely cause is a replay memory of only 5,000 decisions (\u00a7 Limitations & Next Steps).\n- **Next experiment:** raise replay memory from 5,000 to 50,000, holding the other settings fixed (\u00a7 Limitations & Next Steps).",
+      "score": 6.99
+    }
+  ]
+}

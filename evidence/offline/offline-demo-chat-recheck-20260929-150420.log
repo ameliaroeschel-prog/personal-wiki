@@ -1,0 +1,78 @@
+
+
+==================== 0. Proof of offline + device ====================
+$ curl -sS -m 5 https://huggingface.co
+Tue Sep 29 15:04:20 PDT 2026
+curl: (6) Could not resolve host: huggingface.co
+Confirmed: internet unreachable.
+ProductName:		macOS ProductVersion:		15.5 BuildVersion:		24F74 
+Chip: Apple M1 · RAM: 8 GB unified memory
+Free disk: 36Gi
+Runtime: mlx-vlm 0.7.2 · mlx 0.32.2
+
+
+==================== 6. Chat mode checks (capabilities, draft, follow-up, a claim made only in chat) ====================
+$ ./wiki chat
+[loading mlx-community/gemma-4-e2b-it-4bit locally...]
+
+Scout (chat mode) · model mlx-community/gemma-4-e2b-it-4bit · execution: local
+Type a message. /notes <q> forces a wiki lookup, /clear resets, /exit quits.
+
+you > scout > Hey Amelia! I'm Scout, your personal wiki assistant. I can help you brainstorm, draft, summarize, plan, or rewrite anything you need. Just tell me what's on your mind! 😊
+[retrieval: no — conversational / follow-up]
+
+you > scout > I can help you with all your MBA/AI project needs! For example, I can:
+
+*   **Brainstorm** new ideas.
+*   **Draft** documents or summaries.
+*   **Plan** out a project outline.
+*   **Summarize** long texts.
+*   **Rewrite** text for clarity or tone.
+*   **Look up** details from your personal wiki notes when you need them.
+
+Just let me know what you're working on! 🚀
+[retrieval: no — conversational / follow-up]
+
+you > scout > Suggestion: Here is a concise 4-step plan for studying. I can tailor this if you need more detail!
+
+1.  **Assess & Prioritize:** List all topics and identify the most heavily weighted areas. [S1]
+2.  **Active Review:** Don't just read—test yourself. Use flashcards or practice problems. [S2]
+3.  **Simulated Testing:** Do full practice exams under timed conditions to build stamina. [S3]
+4.  **Targeted Review:** Focus only on the weak spots identified in Step 3 for final cramming. [S4]
+
+Let me know if you want me to expand on any of those steps!
+[retrieval: no — drafting request with no mention of notes]
+
+you > scout > Got it. Here is the ultra-short version:
+
+**4-Step Exam Plan:**
+1.  **Prioritize** topics.
+2.  **Test** yourself actively.
+3.  **Simulate** exams (timed).
+4.  **Drill** weak areas.
+
+That should keep it punchy! 👍
+[retrieval: no — conversational / follow-up]
+
+you > scout > That's fantastic news! An A on the Pac-Man assignment is a solid win. 🎉
+
+I have the relevant passages from your wiki now. How can I help you use this information? Are you looking to summarize the key takeaways, or maybe draft something for a presentation?
+[retrieval: yes — mentions Amelia's notes or projects]
+  S1 wiki/Projects/Ms Pac-Man DQN Agent.md — Ms Pac-Man DQN Agent
+  S2 raw/pacman-dqn-readme.md — Training a Ms. Pac-Man Agent (Deep Q-Network) > 🧠 How the Agent Works
+  S3 wiki/Concepts/Exploration Rate.md — Exploration Rate
+
+you > scout > Your Conflict Lab class meets on **Thursdays from 2 to 5 p.m. in room N500**. 😊
+
+That's for the hands-on practice of difficult conversations, including topics like intent versus impact and giving feedback [S1].
+[retrieval: yes — strong wiki match (BM25 14.3)]
+  S1 wiki/Courses/Haas Course Schedule.md — Haas Course Schedule > Conflict Lab
+  S2 raw/haas-courses-voice-note.md — (top)
+  S3 wiki/Courses/Haas Course Schedule.md — Haas Course Schedule > Fundamentals of Agentic AI
+
+you > [transcript saved to evidence/chat/20260929-150446-chat-session.md]
+
+
+==================== Done ====================
+$ date
+Tue Sep 29 15:04:46 PDT 2026
